@@ -145,6 +145,15 @@ namespace CK.Runtime.Combat
 
             InputSnapshot input = Input.Sample();
             uint tick = Bridge.TickIndex;
+            if (input.PrimaryPressed || input.PrimaryReleased || input.BlockPressed || input.BlockReleased ||
+                input.DodgePressed || input.SkillQ || input.SkillE || input.SkillR || input.SkillF ||
+                input.TabPressed || input.MapPressed || input.InventoryPressed ||
+                input.Item1 || input.Item2 || input.Item3 || input.Item4 || tick % 60u == 0u)
+            {
+                Debug.Log($"[CK] input t{tick} move=({input.MoveX:0},{input.MoveZ:0}) block={input.BlockHeld} " +
+                          $"primary={input.PrimaryPressed}/{input.PrimaryHeld}/{input.PrimaryReleased} " +
+                          $"backend={Input.BackendName} polled={Input.LastPollSucceeded} samples={Input.SampleCount}");
+            }
 
             // 1. Weapon / panel / item intents (host side, no combat rules).
             HandleHostInput(input);
@@ -193,6 +202,12 @@ namespace CK.Runtime.Combat
             }
             PlayerSnapshot = Bridge.GetSnapshot(PlayerActorId);
             EnemySnapshot = Bridge.GetSnapshot(EnemyActorId);
+            if (PlayerSnapshot.Busy && PlayerSnapshot.AbilityIndex == _dodgeAbilityIndex &&
+                PlayerSnapshot.AbilityFrame <= Config.Combat.DodgeInvulnFrames + 2)
+            {
+                Debug.Log($"[CK] dodge state t={PlayerSnapshot.AbilityFrame} inv={PlayerSnapshot.Invulnerable} " +
+                          $"phase={PlayerSnapshot.Phase} enemyFrame={EnemySnapshot.AbilityFrame} tick={Bridge.TickIndex}");
+            }
             UpdateDistances();
         }
 
@@ -587,7 +602,9 @@ namespace CK.Runtime.Combat
             Vector3 delta = b - a;
             delta.y = 0f;
             DistanceToEnemy = delta.magnitude;
-            PlayerTouchingEnemy = DistanceToEnemy <= Player.BodyVolume.Radius + Enemy.BodyVolume.Radius + 0.02f;
+            float contactRadius = Player.BodyVolume.Radius + Enemy.BodyVolume.Radius;
+            float skin = Player.Controller != null ? Mathf.Max(0f, Player.Controller.skinWidth) : 0f;
+            PlayerTouchingEnemy = DistanceToEnemy <= contactRadius + skin + 0.12f;
         }
 
         /// <summary>Resets native state and returns both actors to their spawn transform.</summary>

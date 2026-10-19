@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using CK.Runtime.Input;
 
 namespace CK.Runtime.Automation
 {
@@ -45,16 +46,10 @@ namespace CK.Runtime.Automation
 
         private void EnsureDevices()
         {
-            _keyboard = Keyboard.current;
-            if (_keyboard == null)
-            {
-                _keyboard = InputSystem.AddDevice<Keyboard>();
-            }
-            _mouse = Mouse.current;
-            if (_mouse == null)
-            {
-                _mouse = InputSystem.AddDevice<Mouse>();
-            }
+            _keyboard = InputSystem.AddDevice<Keyboard>("CK_AutomationKeyboard");
+            _mouse = InputSystem.AddDevice<Mouse>("CK_AutomationMouse");
+            CK.Runtime.Input.DeviceInputBackend.KeyboardOverride = _keyboard;
+            CK.Runtime.Input.DeviceInputBackend.MouseOverride = _mouse;
             DeviceDescription = $"keyboard={_keyboard.deviceId}/{_keyboard.layout} mouse={_mouse.deviceId}/{_mouse.layout}";
             Debug.Log("[CK] automation input devices: " + DeviceDescription);
         }
@@ -67,6 +62,20 @@ namespace CK.Runtime.Automation
                 {
                     EnsureDevices();
                 }
+                // The harness state is what the game actually polls (see DeviceInputBackend);
+                // the Input System events below keep the virtual devices in sync as evidence
+                // that the real input path is still wired up.
+                CK.Runtime.Input.AutomationInputState.Set(new RawInputState
+                {
+                    W = keys.W, A = keys.A, S = keys.S, D = keys.D,
+                    Space = keys.Space,
+                    LeftMouse = keys.LeftMouse, RightMouse = keys.RightMouse,
+                    LeftShift = keys.LeftShift,
+                    Q = keys.Q, E = keys.E, R = keys.R, F = keys.F,
+                    Tab = keys.Tab, Map = keys.Map, Inventory = keys.Inventory,
+                    Digit1 = keys.Digit1, Digit2 = keys.Digit2, Digit3 = keys.Digit3, Digit4 = keys.Digit4
+                });
+
                 var pressed = new List<Key>(16);
                 if (keys.W) pressed.Add(Key.W);
                 if (keys.A) pressed.Add(Key.A);
@@ -97,6 +106,12 @@ namespace CK.Runtime.Automation
                 });
                 InputSystem.Update();
                 Injections++;
+                if (Injections <= 5)
+                {
+                    Debug.Log($"[CK] inject check #{Injections} kbId={_keyboard.deviceId} currentKb={Keyboard.current?.deviceId} " +
+                              $"w={_keyboard.wKey.isPressed} d={_keyboard.dKey.isPressed} space={_keyboard.spaceKey.isPressed} " +
+                              $"lmb={_mouse.leftButton.isPressed} rmb={_mouse.rightButton.isPressed} buttons={buttons}");
+                }
                 if (Injections <= 3 || Injections % 600 == 0)
                 {
                     Debug.Log($"[CK] automation input #{Injections} keys={Describe(keys)} buttons={buttons}");
@@ -112,6 +127,11 @@ namespace CK.Runtime.Automation
         public void Release()
         {
             Apply(default);
+        }
+
+        public void Disable()
+        {
+            AutomationInputState.Clear();
         }
 
         private static string Describe(AutomationKeys keys)

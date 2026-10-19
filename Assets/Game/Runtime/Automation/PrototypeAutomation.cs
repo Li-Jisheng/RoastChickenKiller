@@ -309,7 +309,7 @@ namespace CK.Runtime.Automation
             yield return ResetState();
             yield return WaitUntil(() =>
                 Enemy != null && Enemy.Busy && Enemy.AbilityIndex == _enemySwingAbilityIndex &&
-                Enemy.AbilityFrame >= Mathf.Max(0, _enemySwingActiveFrame - 2), 400, "M4 enemy active window approach");
+                Enemy.AbilityFrame >= Mathf.Max(0, _enemySwingActiveFrame - 1), 400, "M4 enemy active window approach");
             yield return TapKeys(new AutomationKeys { RightMouse = true }, 3);
             yield return WaitUntil(() => _director.DodgedCount > 0, 90, "M4 dodged enemy hit");
             yield return Capture("03_dodge_immune.png", "M4 闪避：重叠发生且处于无敌帧，HP 1000，事件 Dodged，伤害 0",
@@ -515,7 +515,7 @@ namespace CK.Runtime.Automation
             yield return WaitTicks(3);
             yield return WaitUntil(() =>
                 Enemy != null && Enemy.Busy && Enemy.AbilityIndex == _enemySwingAbilityIndex &&
-                Enemy.AbilityFrame >= Mathf.Max(0, _enemySwingActiveFrame - 2), 400, "M7 dodge approach");
+                Enemy.AbilityFrame >= Mathf.Max(0, _enemySwingActiveFrame - 1), 400, "M7 dodge approach");
             yield return TapKeys(new AutomationKeys { RightMouse = true }, 3);
             yield return WaitUntil(() => _director.DodgedCount > 0, 90, "M7 dodged hit");
 

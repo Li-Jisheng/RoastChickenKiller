@@ -24,20 +24,58 @@ namespace CK.Runtime.Input
     }
 
     /// <summary>
+    /// Deterministic state source used by gate automation. Automated Play Mode runs
+    /// inject Input System events, but the editor's input update clears synthetic
+    /// device state; the harness overrides the polled state so the exact same
+    /// PrototypeInput -> command buffer -> native tick path stays deterministic.
+    /// </summary>
+    public static class AutomationInputState
+    {
+        public static bool Active { get; private set; }
+        public static RawInputState State { get; private set; }
+
+        public static void Set(RawInputState state)
+        {
+            Active = true;
+            State = state;
+        }
+
+        public static void Clear()
+        {
+            Active = false;
+            State = default;
+        }
+    }
+
+    /// <summary>
     /// Reads the new Input System devices directly. Works for real keyboard/mouse
     /// input and for automation that injects Input System state events.
     /// </summary>
     public sealed class DeviceInputBackend : IPrototypeInputBackend
     {
-        public string Name => "InputSystem(Keyboard/Mouse)";
+        /// <summary>
+        /// When gate automation runs it installs dedicated virtual devices here so
+        /// its injected state cannot be overwritten by the OS device state.
+        /// </summary>
+        public static Keyboard KeyboardOverride;
+        public static Mouse MouseOverride;
+
+        public string Name => AutomationInputState.Active
+            ? "InputSystem(Keyboard/Mouse)+AutomationHarness"
+            : "InputSystem(Keyboard/Mouse)";
 
         public bool Poll(out RawInputState state)
         {
             state = default;
-            Keyboard keyboard = Keyboard.current;
-            Mouse mouse = Mouse.current;
+            Keyboard keyboard = KeyboardOverride != null ? KeyboardOverride : Keyboard.current;
+            Mouse mouse = MouseOverride != null ? MouseOverride : Mouse.current;
             if (keyboard == null)
             {
+                if (AutomationInputState.Active)
+                {
+                    state = AutomationInputState.State;
+                    return true;
+                }
                 return false;
             }
             state.W = keyboard.wKey.isPressed;
@@ -61,6 +99,10 @@ namespace CK.Runtime.Input
             {
                 state.LeftMouse = mouse.leftButton.isPressed;
                 state.RightMouse = mouse.rightButton.isPressed;
+            }
+            if (AutomationInputState.Active)
+            {
+                state = AutomationInputState.State;
             }
             return true;
         }

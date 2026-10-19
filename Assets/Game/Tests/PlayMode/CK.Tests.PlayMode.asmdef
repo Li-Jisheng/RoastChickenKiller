@@ -5,12 +5,9 @@
         "CK.Domain",
         "CK.Native",
         "CK.Runtime",
-        "CK.Editor",
         "Unity.InputSystem"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

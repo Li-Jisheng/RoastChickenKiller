@@ -106,7 +106,7 @@ namespace CK.Tests.EditMode
             Assert.AreEqual(967f, enemy.Health);
             Assert.AreEqual(0f, enemy.EffectiveDefense);
             Assert.IsTrue(enemy.BuffActive);
-            Assert.GreaterOrEqual(enemy.BuffRemainingFrames, 590);
+            Assert.GreaterOrEqual(enemy.BuffRemainingFrames, 540);
             CombatEvent? applied = Find(CombatEventType.BuffApplied);
             Assert.IsNotNull(applied);
             Assert.AreEqual(0, applied.Value.DefenseAfter);

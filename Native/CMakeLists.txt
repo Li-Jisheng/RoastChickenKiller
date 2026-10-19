@@ -16,7 +16,6 @@ add_library(ck_core STATIC
     src/core/combat_core.cpp
 )
 target_include_directories(ck_core PUBLIC include src)
-target_compile_definitions(ck_core PUBLIC CK_STATIC)
 
 add_library(ck_combat SHARED
     src/c_api.cpp

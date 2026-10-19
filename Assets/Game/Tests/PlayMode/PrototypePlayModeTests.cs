@@ -52,6 +52,7 @@ namespace CK.Tests.PlayMode
             if (_input != null)
             {
                 _input.Release();
+                _input.Disable();
             }
             _input = null;
         }
@@ -142,11 +143,12 @@ namespace CK.Tests.PlayMode
             yield return WaitTicks(3);
             _input.Apply(new AutomationKeys { Space = true });
             yield return WaitUntil(() => _director.BlockedCount > 0, 400);
+            CombatEventType lastEvent = _director.LastEventType;
             _input.Release();
             yield return WaitTicks(3);
             Assert.AreEqual(1000f, _director.PlayerSnapshot.Health);
             Assert.AreEqual(0, _director.LastDamage);
-            Assert.AreEqual(CombatEventType.Blocked, _director.LastEventType);
+            Assert.AreEqual(CombatEventType.Blocked, lastEvent);
         }
 
         [UnityTest]
@@ -155,7 +157,7 @@ namespace CK.Tests.PlayMode
             yield return WaitUntil(() =>
                 _director.EnemySnapshot.Busy &&
                 _director.EnemySnapshot.AbilityIndex == _enemySwingIndex &&
-                _director.EnemySnapshot.AbilityFrame >= Mathf.Max(0, _enemyActiveStart - 2), 400);
+                _director.EnemySnapshot.AbilityFrame >= Mathf.Max(0, _enemyActiveStart - 1), 400);
             _input.Apply(new AutomationKeys { RightMouse = true });
             yield return WaitTicks(3);
             _input.Release();
