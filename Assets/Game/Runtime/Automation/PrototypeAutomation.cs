@@ -176,6 +176,7 @@ namespace CK.Runtime.Automation
 
         private IEnumerator RunM1()
         {
+            _director.EnemyAttacksEnabled = false;
             yield return WaitTicks(20);
             yield return Capture("01_actors_hud.png", "M1 初始 Actor 与 HUD：HP 1000/1000，DEF 50/50，3 武器槽，按键提示",
                 Expect(("playerHp", 1000), ("enemyHp", 1000), ("playerDef", 50), ("enemyDef", 50),
@@ -224,6 +225,7 @@ namespace CK.Runtime.Automation
                     ("itemBarSlots", 4), ("playerHp", 1000), ("enemyHp", 1000), ("combo", 0)));
             _evidence.Metric("keySmokeCovered", "WASD,Space,LMB,RMB,LShift,Q,E,R,F,Tab,M,B,1,2,3,4");
             _evidence.Metric("audioCues", _director.Audio != null ? _director.Audio.PlayedCueCount : 0);
+            _director.EnemyAttacksEnabled = true;
         }
 
         private IEnumerator RunM2()

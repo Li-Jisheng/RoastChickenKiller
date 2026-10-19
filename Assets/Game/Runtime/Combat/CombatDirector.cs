@@ -49,6 +49,7 @@ namespace CK.Runtime.Combat
         public int DodgedCount { get; private set; }
         public int HitTakenCount { get; private set; }
         public int HitDealtCount { get; private set; }
+        public bool EnemyAttacksEnabled { get; set; } = true;
         public bool InventoryVisible { get; set; }
         public bool MapVisible { get; set; }
         public int WeaponSwitches { get; private set; }
@@ -185,7 +186,10 @@ namespace CK.Runtime.Combat
 
             // 4. Combat commands (tap/hold, dodge, skills, block) and enemy script.
             SubmitInputCommands(input, tick);
-            EnemyDriver.SubmitIfDue(tick);
+            if (EnemyAttacksEnabled)
+            {
+                EnemyDriver.SubmitIfDue(tick);
+            }
 
             // 5. Authoritative tick.
             Bridge.Tick(_frameVolumes);
