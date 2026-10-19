@@ -81,7 +81,28 @@ if (-not $SkipNative) {
     }
     $ctest = Join-Path $root 'TestArtifacts/ctest-debug.xml'
     if (Test-Path $ctest) {
-        Copy-Item -Force $ctest (Join-Path $evidence 'native-results.xml')
+        Copy-Item -Force $ctest (Join-Path $evidence 'native-results-ctest.xml')
+    }
+    # The native test executable contains 32 cases; CTest sees one executable.
+    # Run it directly and record a JUnit file with the real case count.
+    $nativeExe = Join-Path $root 'Native/build/Debug/ck_native_tests.exe'
+    if (Test-Path $nativeExe) {
+        $nativeOut = (& $nativeExe 2>&1 | Out-String)
+        [System.IO.File]::WriteAllText((Join-Path $evidence 'native-tests.log'), $nativeOut, (New-Object System.Text.UTF8Encoding($false)))
+        $match = [regex]::Match($nativeOut, '(\d+) tests, (\d+) checks, (\d+) failures')
+        if ($match.Success) {
+            $total = [int]$match.Groups[1].Value
+            $failed = [int]$match.Groups[3].Value
+            $junit = "<testsuites><testsuite name=`"ck_native_tests`" tests=`"$total`" failures=`"$failed`" errors=`"0`" skipped=`"0`"></testsuite></testsuites>"
+            [System.IO.File]::WriteAllText((Join-Path $evidence 'native-results.xml'), $junit, (New-Object System.Text.UTF8Encoding($false)))
+            Write-Host ("  Native: {0} tests, {1} failed" -f $total, $failed)
+            if ($failed -gt 0) {
+                throw "Native tests failed"
+            }
+        }
+        else {
+            throw "Could not parse native test output"
+        }
     }
 }
 
@@ -119,14 +140,14 @@ $extraArgs = @()
 if ($Module -eq 'M3_4STEPS' -or $Module -eq 'M6_4SLOTS') {
     Write-Host "== Preparing temporary drill config ==" -ForegroundColor Cyan
     $baseConfigPath = Join-Path $root 'Config/CombatPrototype.json'
-    $config = Get-Content $baseConfigPath -Raw | ConvertFrom-Json
+    $config = [System.IO.File]::ReadAllText($baseConfigPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
     if ($Module -eq 'M3_4STEPS') {
         $config.combo.steps = @('normal_1', 'normal_2', 'normal_3', 'normal_1')
     }
     else {
         $fourth = [pscustomobject]@{
             id               = 'sword_04'
-            displayName      = '训练剑 IV'
+            displayName      = 'Training Sword IV'
             length           = 1.8
             radius           = 0.08
             damageMultiplier = 1.0
@@ -180,7 +201,7 @@ $summaryPath = Join-Path $evidence 'summary.json'
 if (-not (Test-Path $summaryPath)) {
     throw "Gate did not produce summary.json: $summaryPath"
 }
-$summary = Get-Content $summaryPath -Raw | ConvertFrom-Json
+$summary = [System.IO.File]::ReadAllText($summaryPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
 $shotCount = @($summary.screenshots).Count
 Write-Host ""
 Write-Host "Module : $($summary.module)" -ForegroundColor Cyan

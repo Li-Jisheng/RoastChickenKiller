@@ -215,6 +215,11 @@ namespace CK.Runtime.Actors
             {
                 shader = Shader.Find("Standard");
             }
+            if (shader == null)
+            {
+                Debug.LogError("[CK] actor shader missing (URP/Lit not included in this build)");
+                return null;
+            }
             var material = new Material(shader) { name = "ActorRuntimeMaterial" };
             if (material.HasProperty("_BaseColor"))
             {

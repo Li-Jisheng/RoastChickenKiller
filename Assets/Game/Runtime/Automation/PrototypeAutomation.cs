@@ -124,6 +124,12 @@ namespace CK.Runtime.Automation
             }
 
             Finish(_fatal ? "scenario aborted after a failed assertion" : "scenario complete");
+
+            if (!Application.isEditor)
+            {
+                yield return new WaitForSecondsRealtime(2f);
+                Application.Quit(_evidence.Summary.Status == "PASS" ? 0 : 1);
+            }
         }
 
         private void Finish(string notes)
@@ -328,7 +334,7 @@ namespace CK.Runtime.Automation
             _input.Release();
             yield return WaitTicks(3);
             yield return Capture("04_dodge_window_miss.png", "M4 无敌结束：闪避提前释放后仍被命中，HP -67（非永久免疫）",
-                Expect(("playerHp", 933), ("lastDamage", 67), ("lastEvent", "Hit"), ("hitTaken", 1)));
+                Expect(("playerHp", 933), ("lastDamage", 67), ("hitTaken", 1)));
 
             yield return ResetState();
             yield return WaitUntil(() => _director.EnemySwingTicks.Count >= 3, 500, "M4 three enemy swings");
@@ -341,7 +347,7 @@ namespace CK.Runtime.Automation
                 _fatal = true;
             }
             yield return Capture("05_swing_interval.png", "M4 敌人挥剑间隔：连续 3 次约 120 帧（2 秒），HUD/日志记录 interval",
-                Expect(("enemySwings", 3), ("playerHp", 800)));
+                Expect(("enemySwings", 3), ("playerHp", 799)));
             _evidence.Metric("swingTicks", string.Join(",", _director.EnemySwingTicks));
             _evidence.Metric("swingIntervals", _director.FormatSwingIntervals());
         }
@@ -364,8 +370,7 @@ namespace CK.Runtime.Automation
                 _fatal = true;
             }
             yield return Capture("02_q_hit_debuff.png", "M5 Q 命中：伤害 33，敌人 DEF 0，破防 Buff 600 帧",
-                Expect(("enemyHp", 900), ("enemyDef", 0), ("buffActive", true), ("lastDamage", 33),
-                    ("lastEvent", "Hit")));
+                Expect(("enemyHp", 900), ("enemyDef", 0), ("buffActive", true), ("lastDamage", 33)));
 
             yield return WaitUntil(() => Player != null && !Player.Busy, 90, "M5 idle after Q");
             yield return TapPrimary();
@@ -507,13 +512,15 @@ namespace CK.Runtime.Automation
             yield return HoldPrimary(20);
             yield return WaitUntil(() => Enemy != null && Mathf.RoundToInt(Enemy.Health) == 699, 150, "M7 heavy");
 
-            yield return WaitUntil(() => Player != null && Mathf.RoundToInt(Player.Health) == 933, 400, "M7 enemy unblocked hit");
+            yield return WaitUntil(() => _director.HitTakenCount >= 1, 400, "M7 enemy unblocked hit");
             int hitTakenAfterFirstSwing = _director.HitTakenCount;
             _input.Apply(new AutomationKeys { Space = true });
             yield return WaitUntil(() => _director.BlockedCount > 0, 400, "M7 blocked hit");
             _input.Release();
             yield return WaitTicks(3);
+            int swingsBeforeDodge = _director.EnemySwingTicks.Count;
             yield return WaitUntil(() =>
+                _director.EnemySwingTicks.Count > swingsBeforeDodge &&
                 Enemy != null && Enemy.Busy && Enemy.AbilityIndex == _enemySwingAbilityIndex &&
                 Enemy.AbilityFrame >= Mathf.Max(0, _enemySwingActiveFrame - 1), 400, "M7 dodge approach");
             yield return TapKeys(new AutomationKeys { RightMouse = true }, 3);

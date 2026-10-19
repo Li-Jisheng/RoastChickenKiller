@@ -64,10 +64,60 @@ namespace CK.Editor
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetIl2CppCompilerConfiguration(NamedBuildTarget.Standalone, Il2CppCompilerConfiguration.Release);
 
+            ConfigureAlwaysIncludedShaders();
+
             EditorSettings.defaultBehaviorMode = EditorBehaviorMode.Mode3D;
             Debug.Log("[CK] graphics APIs (Win64): " +
                       string.Join(",", PlayerSettings.GetGraphicsAPIs(BuildTarget.StandaloneWindows64)) +
                       " useDefault=" + PlayerSettings.GetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64));
+        }
+
+        /// <summary>
+        /// Runtime-generated materials need URP shaders that are otherwise stripped from
+        /// player builds. Keep Lit/Unlit shaders in the build so Player materials work.
+        /// </summary>
+        public static void ConfigureAlwaysIncludedShaders()
+        {
+            UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/GraphicsSettings.asset");
+            if (assets == null || assets.Length == 0)
+            {
+                Debug.LogWarning("[CK] GraphicsSettings.asset not found; player materials may lose shaders");
+                return;
+            }
+            var serialized = new SerializedObject(assets[0]);
+            SerializedProperty shaders = serialized.FindProperty("m_AlwaysIncludedShaders");
+            if (shaders == null)
+            {
+                Debug.LogWarning("[CK] m_AlwaysIncludedShaders not found");
+                return;
+            }
+            AddAlwaysIncludedShader(shaders, "Universal Render Pipeline/Lit");
+            AddAlwaysIncludedShader(shaders, "Universal Render Pipeline/Unlit");
+            AddAlwaysIncludedShader(shaders, "Universal Render Pipeline/Simple Lit");
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[CK] always included shaders: {shaders.arraySize} entries");
+        }
+
+        private static void AddAlwaysIncludedShader(SerializedProperty shaders, string shaderName)
+        {
+            Shader shader = Shader.Find(shaderName);
+            if (shader == null)
+            {
+                Debug.LogWarning("[CK] shader not found: " + shaderName);
+                return;
+            }
+            for (int i = 0; i < shaders.arraySize; i++)
+            {
+                if (shaders.GetArrayElementAtIndex(i).objectReferenceValue == shader)
+                {
+                    return;
+                }
+            }
+            int index = shaders.arraySize;
+            shaders.InsertArrayElementAtIndex(index);
+            shaders.GetArrayElementAtIndex(index).objectReferenceValue = shader;
+            Debug.Log("[CK] added always-included shader " + shaderName);
         }
 
         public static void ConfigureTimeManager()

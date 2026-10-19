@@ -41,7 +41,7 @@ namespace CK.Runtime.Combat
         public WeaponConfig CurrentWeapon { get; private set; }
         public int LastItemSlot { get; private set; }
         public string LastInputFeedback { get; private set; } = string.Empty;
-        public string LastEventText { get; private set; } = "无";
+        public string LastEventText { get; private set; } = "none";
         public int LastDamage { get; private set; }
         public bool LastOverlap { get; private set; }
         public CombatEventType LastEventType { get; private set; }
@@ -553,7 +553,7 @@ namespace CK.Runtime.Combat
             if (PlayerSnapshot.Busy || PlayerSnapshot.Blocking)
             {
                 WeaponSwitchRejections++;
-                LastInputFeedback = "Tab: 动作中不可切换";
+                LastInputFeedback = "Tab: switch locked (action)";
                 if (Tick - _weaponSwitchRejectLogTick > 15)
                 {
                     _weaponSwitchRejectLogTick = Tick;
@@ -578,8 +578,8 @@ namespace CK.Runtime.Combat
                 WeaponSwitches++;
                 Audio.PlayCue(AudioCues.WeaponSwitch);
                 LastInputFeedback = CurrentWeapon != null
-                    ? $"Tab: 武器槽 {slot + 1}/{Config.Loadout.WeaponSlots} {CurrentWeapon.DisplayName} len={CurrentWeapon.Length:0.##}"
-                    : $"Tab: 武器槽 {slot + 1}/{Config.Loadout.WeaponSlots} 空槽";
+                    ? $"Tab: weapon slot {slot + 1}/{Config.Loadout.WeaponSlots} {CurrentWeapon.DisplayName} len={CurrentWeapon.Length:0.##}"
+                    : $"Tab: weapon slot {slot + 1}/{Config.Loadout.WeaponSlots} EMPTY";
                 Debug.Log($"[CK] weapon slot -> {slot + 1}/{Config.Loadout.WeaponSlots} " +
                           (CurrentWeapon != null ? $"{CurrentWeapon.Id} len={CurrentWeapon.Length} r={CurrentWeapon.Radius}" : "<empty>"));
             }

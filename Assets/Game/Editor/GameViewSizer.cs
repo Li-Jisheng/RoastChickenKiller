@@ -1,101 +1,104 @@
 using System;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
 
 namespace CK.Editor
 {
     /// <summary>
-    /// Best-effort Game View resolution control for readable 1280x720 evidence captures.
-    /// Uses Unity's internal GameViewSizes API via reflection; failures are non-fatal and
-    /// the actual resolution is recorded in summary.json.
+    /// Makes the Play Mode Game View large enough for readable evidence screenshots.
+    /// Strategy: resize the editor window, then maximize the Game View tab; if that
+    /// fails, create a floating Game View window at 1300x800. The actual resolution
+    /// is recorded in summary.json.
     /// </summary>
     public static class GameViewSizer
     {
-        public static bool TrySet(int width, int height)
+        private const uint SwpShowWindow = 0x0040;
+
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint flags);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int command);
+
+        public static bool PrepareForPlay(int windowWidth = 1300, int windowHeight = 790)
         {
             try
             {
                 Type gameViewType = Type.GetType("UnityEditor.GameView, UnityEditor");
-                Type sizesType = Type.GetType("UnityEditor.GameViewSizes, UnityEditor");
-                Type sizeType = Type.GetType("UnityEditor.GameViewSize, UnityEditor");
-                Type sizeKindType = Type.GetType("UnityEditor.GameViewSizeType, UnityEditor");
-                if (gameViewType == null || sizesType == null || sizeType == null || sizeKindType == null)
+                if (gameViewType == null)
                 {
-                    Debug.LogWarning("[CK] GameViewSizes reflection types unavailable; keeping current Game View size");
+                    Debug.LogWarning("[CK] GameView type not found");
                     return false;
+                }
+
+                IntPtr handle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+                if (handle != IntPtr.Zero)
+                {
+                    ShowWindow(handle, 9); // SW_RESTORE
+                    float pixelsPerPoint = EditorGUIUtility.pixelsPerPoint;
+                    int physicalWidth = Mathf.RoundToInt(windowWidth * pixelsPerPoint);
+                    int physicalHeight = Mathf.RoundToInt(windowHeight * pixelsPerPoint);
+                    SetWindowPos(handle, IntPtr.Zero, 10, 10, physicalWidth, physicalHeight, SwpShowWindow);
+                    Debug.Log($"[CK] editor window resized for capture: {windowWidth}x{windowHeight} logical, {physicalWidth}x{physicalHeight} physical, pixelsPerPoint={pixelsPerPoint}");
                 }
 
                 EditorWindow gameView = EditorWindow.GetWindow(gameViewType, false, "Game", false);
-                Type singletonType = typeof(ScriptableSingleton<>).MakeGenericType(sizesType);
-                object sizes = singletonType.GetProperty("instance", BindingFlags.Public | BindingFlags.Static)
-                    ?.GetValue(null);
-                if (sizes == null)
-                {
-                    return false;
-                }
-                PropertyInfo groupTypeProperty = sizesType.GetProperty("currentGroupType",
+                gameView.Show();
+                gameView.Focus();
+                PropertyInfo maximizeOnPlay = gameViewType.GetProperty("maximizeOnPlay",
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (groupTypeProperty == null)
+                if (maximizeOnPlay != null && maximizeOnPlay.CanWrite)
                 {
-                    return false;
+                    maximizeOnPlay.SetValue(gameView, true);
                 }
-                object groupType = groupTypeProperty.GetValue(sizes);
-                MethodInfo getGroup = sizesType.GetMethod("GetGroup",
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                object group = getGroup?.Invoke(sizes, new[] { groupType });
-                if (group == null)
+                try
                 {
-                    return false;
+                    gameView.maximized = true;
                 }
-                Type groupClass = group.GetType();
-                int total = (int)(groupClass.GetProperty("totalCount")?.GetValue(group) ?? 0);
-                MethodInfo getSize = groupClass.GetMethod("GetGameViewSize");
-                for (int i = 0; i < total; i++)
+                catch (Exception ex)
                 {
-                    object size = getSize?.Invoke(group, new object[] { i });
-                    if (size == null)
-                    {
-                        continue;
-                    }
-                    int w = (int)(size.GetType().GetProperty("width")?.GetValue(size) ?? 0);
-                    int h = (int)(size.GetType().GetProperty("height")?.GetValue(size) ?? 0);
-                    if (w == width && h == height)
-                    {
-                        return Select(gameView, i);
-                    }
+                    Debug.LogWarning("[CK] Game View maximize failed: " + ex.Message);
                 }
-
-                ConstructorInfo constructor = sizeType.GetConstructor(new[] { sizeKindType, typeof(int), typeof(int), typeof(string) });
-                if (constructor == null)
-                {
-                    return false;
-                }
-                object fixedResolution = Enum.Parse(sizeKindType, "FixedResolution");
-                object newSize = constructor.Invoke(new object[] { fixedResolution, width, height, $"CK {width}x{height}" });
-                groupClass.GetMethod("AddCustomSize")?.Invoke(group, new[] { newSize });
-                total = (int)(groupClass.GetProperty("totalCount")?.GetValue(group) ?? 0);
-                return Select(gameView, total - 1);
+                gameView.Repaint();
+                Debug.Log($"[CK] Game View prepared: pos={gameView.position} maximized={gameView.maximized} " +
+                          $"screen={Screen.width}x{Screen.height}");
+                return true;
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("[CK] Game View resolution set failed: " + ex.GetType().Name + " " + ex.Message);
+                Exception inner = ex.InnerException ?? ex;
+                Debug.LogWarning("[CK] Game View preparation failed: " + inner.GetType().Name + " " + inner.Message);
                 return false;
             }
         }
 
-        private static bool Select(EditorWindow gameView, int index)
+        /// <summary>Diagnostics entry retained for troubleshooting capture resolution.</summary>
+        public static void DumpInfo()
         {
-            MethodInfo callback = gameView.GetType().GetMethod("SizeSelectionCallback",
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (callback == null)
+            try
             {
-                Debug.LogWarning("[CK] GameView.SizeSelectionCallback not found");
-                return false;
+                Type gameViewType = Type.GetType("UnityEditor.GameView, UnityEditor");
+                Debug.Log("[CK] screen=" + Screen.width + "x" + Screen.height);
+                if (gameViewType != null)
+                {
+                    EditorWindow window = EditorWindow.GetWindow(gameViewType, false, "Game", false);
+                    object selected = gameViewType.GetProperty("selectedSizeIndex",
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(window);
+                    object onPlay = gameViewType.GetProperty("maximizeOnPlay",
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(window);
+                    Debug.Log($"[CK] GameView selectedSizeIndex={selected} maximizeOnPlay={onPlay} position={window.position} maximized={window.maximized}");
+                }
             }
-            callback.Invoke(gameView, new object[] { index, null });
-            Debug.Log($"[CK] Game View size set to index {index}");
-            return true;
+            catch (Exception ex)
+            {
+                Debug.LogWarning("[CK] GameView dump failed: " + ex);
+            }
+            if (Application.isBatchMode)
+            {
+                EditorApplication.Exit(0);
+            }
         }
     }
 }

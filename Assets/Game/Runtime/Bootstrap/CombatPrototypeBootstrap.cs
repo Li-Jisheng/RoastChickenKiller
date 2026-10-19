@@ -99,7 +99,7 @@ namespace CK.Runtime.Bootstrap
                 LoadResult = CombatConfigLoader.LoadFromFile(path);
                 if (!LoadResult.Success)
                 {
-                    Fail("配置校验失败: " + LoadResult.ErrorSummary, LoadResult.Config);
+                    Fail("Config validation failed: " + LoadResult.ErrorSummary, LoadResult.Config);
                     return;
                 }
                 config = LoadResult.Config;
@@ -109,7 +109,7 @@ namespace CK.Runtime.Bootstrap
 
             if (!NativeCombatBridge.Probe(out string probeMessage))
             {
-                Fail("原生插件不可用: " + probeMessage, config);
+                Fail("Native plugin unavailable: " + probeMessage, config);
                 return;
             }
             Debug.Log("[CK] " + probeMessage);
@@ -123,7 +123,7 @@ namespace CK.Runtime.Bootstrap
             HitVolumeConfig enemyBody = config.GetActorHitVolume(Faction.Enemy);
             if (playerBody == null || enemyBody == null)
             {
-                Fail("配置缺少玩家或敌人本体碰撞体", config);
+                Fail("Config is missing player or enemy body hit volume", config);
                 return;
             }
 
@@ -145,7 +145,7 @@ namespace CK.Runtime.Bootstrap
             Hud.Initialize(Director, config);
             if (!string.IsNullOrEmpty(error))
             {
-                Fail("战斗初始化失败: " + error, config);
+                Fail("Combat initialization failed: " + error, config);
                 return;
             }
 
@@ -212,6 +212,15 @@ namespace CK.Runtime.Bootstrap
             camera.fieldOfView = 55f;
             camera.nearClipPlane = 0.1f;
             camera.farClipPlane = 200f;
+            var cameras = new List<string>();
+            foreach (Camera existing in Camera.allCameras)
+            {
+                cameras.Add($"{existing.name}(tag={existing.tag},depth={existing.depth},clear={existing.clearFlags},bg={existing.backgroundColor},pos={existing.transform.position},enabled={existing.enabled})");
+            }
+            Debug.Log($"[CK] camera setup: main={camera.name} pos={camera.transform.position} rot={camera.transform.eulerAngles} " +
+                      $"clear={camera.clearFlags} bg={camera.backgroundColor} mask={camera.cullingMask} rect={camera.pixelRect} " +
+                      $"allCameras=[{string.Join("; ", cameras)}] " +
+                      $"rp={UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline?.GetType().Name} quality={QualitySettings.GetQualityLevel()}");
         }
 
         private static void SetupLight()
@@ -253,6 +262,11 @@ namespace CK.Runtime.Bootstrap
             if (shader == null)
             {
                 shader = Shader.Find("Standard");
+            }
+            if (shader == null)
+            {
+                Debug.LogError("[CK] ground shader missing (URP/Lit not included in this build)");
+                return;
             }
             var material = new Material(shader) { name = "GroundRuntimeMaterial" };
             Texture2D checker = CreateCheckerTexture(new Color(0.16f, 0.19f, 0.23f), new Color(0.21f, 0.25f, 0.30f), 8);

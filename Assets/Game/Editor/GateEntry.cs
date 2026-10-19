@@ -120,7 +120,7 @@ namespace CK.Editor
             ProjectSetup.EnsureScene();
             EditorSceneManager.OpenScene(ProjectSetup.ScenePath, OpenSceneMode.Single);
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            GameViewSizer.TrySet(1280, 720);
+            GameViewSizer.PrepareForPlay(1295, 878);
 
             Environment.SetEnvironmentVariable("CK_GATE", module);
             Environment.SetEnvironmentVariable("CK_EVIDENCE", evidenceDirectory);

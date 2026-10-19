@@ -120,6 +120,13 @@ namespace CK.Runtime.View
                         break;
                 }
             }
+            else
+            {
+                // Rest pose: angled outward so both swords are readable in screenshots.
+                // The enemy is mirrored and opens wider so its blade clears the player body.
+                yaw = _swingSign > 0 ? -60f : -110f;
+                pitch = -6f;
+            }
             _currentYaw = yaw;
             _currentPitch = pitch;
             ApplyRotation(yaw, pitch);
