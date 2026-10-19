@@ -422,6 +422,19 @@ namespace CK.Runtime.Automation
             yield return Capture("02_weapon_2.png", "M6 武器槽 2/3：训练剑 II，长度 2.0m，颜色变化",
                 Expect(("weaponSlot", 2), ("weaponId", "sword_02")));
 
+            // Prove attacks still work after switching to the longer slot-2 sword.
+            yield return TapPrimary();
+            yield return WaitUntil(() => Enemy != null && Mathf.RoundToInt(Enemy.Health) == 933, 90,
+                "M6 attack after weapon switch");
+            int switchedDamage = _director.LastDamage;
+            if (switchedDamage != 67)
+            {
+                _evidence.Fail($"M6 切换武器后攻击伤害预期 67，实测 {switchedDamage}");
+                _fatal = true;
+            }
+            _evidence.Metric("weapon2AttackDamage", switchedDamage);
+            yield return WaitUntil(() => Player != null && !Player.Busy, 90, "M6 idle after switched attack");
+
             yield return TapKeys(new AutomationKeys { Tab = true }, 3);
             yield return WaitUntil(() => _director.WeaponSlotIndex == 2, 30, "M6 switch to weapon 3");
             yield return Capture("03_weapon_3.png", "M6 武器槽 3/3：训练剑 III，长度 1.2m，颜色变化",
