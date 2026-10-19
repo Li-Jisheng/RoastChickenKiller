@@ -181,6 +181,13 @@ namespace CK.Runtime.Automation
                 Expect(("playerHp", 1000), ("enemyHp", 1000), ("playerDef", 50), ("enemyDef", 50),
                     ("weaponSlot", 1), ("weaponSlots", 3), ("combo", 0)));
 
+            // Move far out of the enemy's reach first: M1 is an input-mapping gate and
+            // must not produce combat damage. All subsequent keys are still sampled
+            // through the real input/command path, but the sword cannot reach.
+            yield return TapKeys(new AutomationKeys { S = true }, 100);
+            yield return WaitTicks(3);
+            _evidence.Metric("m1KeyTestZ", Mathf.Round(_director.Player.transform.position.z * 100f) / 100f);
+
             // Exercise every mapped key through the Input System path and log feedback.
             yield return TapKeys(AutomationKeys.MoveW, 6);
             yield return TapKeys(new AutomationKeys { A = true }, 6);
@@ -207,7 +214,7 @@ namespace CK.Runtime.Automation
             yield return WaitTicks(15);
             yield return Capture("02_input_hud.png", "M1 按键映射反馈：移动、技能、武器切换、物品栏 1-4 均有 HUD/日志反馈",
                 Expect(("weaponSlot", 2), ("itemSlot", 4), ("itemHistory", "1,2,3,4"), ("weaponSlots", 3),
-                    ("itemBarSlots", 4)));
+                    ("itemBarSlots", 4), ("playerHp", 1000), ("enemyHp", 1000)));
             _evidence.Metric("keySmokeCovered", "WASD,Space,LMB,RMB,LShift,Q,E,R,F,Tab,M,B,1,2,3,4");
             _evidence.Metric("audioCues", _director.Audio != null ? _director.Audio.PlayedCueCount : 0);
         }
@@ -229,7 +236,32 @@ namespace CK.Runtime.Automation
             }
             _evidence.Metric("moveDeltaX", Mathf.Round((movedX - startX) * 100f) / 100f);
             yield return Capture("02_after_move.png", "M2 移动后：WASD 位移与 HUD 坐标同步变化",
-                Expect(("playerZ", 0f), ("enemyHp", 1000)));
+                Expect(("playerX", 2.08f), ("playerZ", 0f), ("enemyHp", 1000)));
+
+            // A / S directions (TC-04 requires all four WASD directions).
+            yield return ResetState();
+            float baseX = _director.Player.transform.position.x;
+            yield return TapKeys(new AutomationKeys { A = true }, 25);
+            yield return WaitTicks(3);
+            float leftDelta = baseX - _director.Player.transform.position.x;
+            _evidence.Metric("moveDeltaA", Mathf.Round(leftDelta * 100f) / 100f);
+            if (leftDelta < 1.5f)
+            {
+                _evidence.Fail($"M2 A 方向位移不足: {leftDelta:0.00}m");
+                _fatal = true;
+            }
+
+            yield return ResetState();
+            float baseZ = _director.Player.transform.position.z;
+            yield return TapKeys(new AutomationKeys { S = true }, 25);
+            yield return WaitTicks(3);
+            float backDelta = baseZ - _director.Player.transform.position.z;
+            _evidence.Metric("moveDeltaS", Mathf.Round(backDelta * 100f) / 100f);
+            if (backDelta < 1.5f)
+            {
+                _evidence.Fail($"M2 S 方向位移不足: {backDelta:0.00}m");
+                _fatal = true;
+            }
 
             yield return ResetState();
             yield return TapKeys(AutomationKeys.MoveW, 70);

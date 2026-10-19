@@ -98,6 +98,26 @@ namespace CK.Tests.PlayMode
 
             _director.ResetCombat();
             yield return WaitTicks(3);
+            start = _director.Player.transform.position;
+            _input.Apply(new AutomationKeys { A = true });
+            yield return WaitTicks(25);
+            _input.Release();
+            yield return WaitTicks(3);
+            Assert.Greater(start.x - _director.Player.transform.position.x, 1.5f, "A axis movement too small");
+            Assert.Less(Mathf.Abs(_director.Player.transform.position.z - start.z), 0.1f);
+
+            _director.ResetCombat();
+            yield return WaitTicks(3);
+            start = _director.Player.transform.position;
+            _input.Apply(new AutomationKeys { S = true });
+            yield return WaitTicks(25);
+            _input.Release();
+            yield return WaitTicks(3);
+            Assert.Greater(start.z - _director.Player.transform.position.z, 1.5f, "S axis movement too small");
+            Assert.Less(Mathf.Abs(_director.Player.transform.position.x - start.x), 0.1f);
+
+            _director.ResetCombat();
+            yield return WaitTicks(3);
             _input.Apply(new AutomationKeys { W = true });
             yield return WaitTicks(90);
             _input.Release();
