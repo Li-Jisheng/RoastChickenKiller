@@ -193,14 +193,21 @@ namespace CK.Runtime.Automation
             yield return TapKeys(new AutomationKeys { A = true }, 6);
             yield return TapKeys(new AutomationKeys { S = true }, 6);
             yield return TapKeys(new AutomationKeys { D = true }, 6);
-            yield return TapKeys(new AutomationKeys { Space = true }, 4);
-            yield return TapPrimary();
-            yield return TapKeys(new AutomationKeys { RightMouse = true }, 3);
-            yield return TapKeys(new AutomationKeys { LeftShift = true }, 3);
-            yield return TapKeys(new AutomationKeys { Q = true }, 3);
-            yield return TapKeys(new AutomationKeys { E = true }, 3);
-            yield return TapKeys(new AutomationKeys { R = true }, 3);
-            yield return TapKeys(new AutomationKeys { F = true }, 3);
+            // Hold block while pressing combat keys: M1 proves the mapping and HUD/log
+            // feedback without starting any attack or skill (they are rejected).
+            var block = new AutomationKeys { Space = true };
+            _input.Apply(block);
+            yield return WaitTicks(3);
+            yield return TapWhileHolding(block, new AutomationKeys { LeftMouse = true }, 4);
+            yield return TapWhileHolding(block, new AutomationKeys { RightMouse = true }, 3);
+            yield return TapWhileHolding(block, new AutomationKeys { LeftShift = true }, 3);
+            yield return TapWhileHolding(block, new AutomationKeys { Q = true }, 3);
+            yield return TapWhileHolding(block, new AutomationKeys { E = true }, 3);
+            yield return TapWhileHolding(block, new AutomationKeys { R = true }, 3);
+            yield return TapWhileHolding(block, new AutomationKeys { F = true }, 3);
+            yield return WaitTicks(5);
+            _input.Release();
+            yield return WaitTicks(5);
             yield return WaitUntil(() => Player != null && !Player.Busy, 300, "M1 idle before weapon switch");
             yield return TapKeys(new AutomationKeys { Tab = true }, 3);
             yield return TapKeys(new AutomationKeys { Map = true }, 3);
@@ -214,7 +221,7 @@ namespace CK.Runtime.Automation
             yield return WaitTicks(15);
             yield return Capture("02_input_hud.png", "M1 按键映射反馈：移动、技能、武器切换、物品栏 1-4 均有 HUD/日志反馈",
                 Expect(("weaponSlot", 2), ("itemSlot", 4), ("itemHistory", "1,2,3,4"), ("weaponSlots", 3),
-                    ("itemBarSlots", 4), ("playerHp", 1000), ("enemyHp", 1000)));
+                    ("itemBarSlots", 4), ("playerHp", 1000), ("enemyHp", 1000), ("combo", 0)));
             _evidence.Metric("keySmokeCovered", "WASD,Space,LMB,RMB,LShift,Q,E,R,F,Tab,M,B,1,2,3,4");
             _evidence.Metric("audioCues", _director.Audio != null ? _director.Audio.PlayedCueCount : 0);
         }
@@ -750,6 +757,47 @@ namespace CK.Runtime.Automation
             _input.Release();
             yield return new WaitForFixedUpdate();
             yield return new WaitForFixedUpdate();
+        }
+
+        /// <summary>Tap one key while keeping a base state (e.g. block) held.</summary>
+        private IEnumerator TapWhileHolding(AutomationKeys held, AutomationKeys tap, int holdTicks)
+        {
+            if (_fatal)
+            {
+                yield break;
+            }
+            _input.Apply(MergeKeys(held, tap));
+            for (int i = 0; i < Mathf.Max(1, holdTicks); i++)
+            {
+                yield return new WaitForFixedUpdate();
+            }
+            _input.Apply(held);
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+        }
+
+        private static AutomationKeys MergeKeys(AutomationKeys a, AutomationKeys b)
+        {
+            a.W |= b.W;
+            a.A |= b.A;
+            a.S |= b.S;
+            a.D |= b.D;
+            a.Space |= b.Space;
+            a.Q |= b.Q;
+            a.E |= b.E;
+            a.R |= b.R;
+            a.F |= b.F;
+            a.Tab |= b.Tab;
+            a.Map |= b.Map;
+            a.Inventory |= b.Inventory;
+            a.Digit1 |= b.Digit1;
+            a.Digit2 |= b.Digit2;
+            a.Digit3 |= b.Digit3;
+            a.Digit4 |= b.Digit4;
+            a.LeftShift |= b.LeftShift;
+            a.LeftMouse |= b.LeftMouse;
+            a.RightMouse |= b.RightMouse;
+            return a;
         }
 
         private IEnumerator TapPrimary()
