@@ -185,7 +185,7 @@ namespace CK.Runtime.Automation
             // Move far out of the enemy's reach first: M1 is an input-mapping gate and
             // must not produce combat damage. All subsequent keys are still sampled
             // through the real input/command path, but the sword cannot reach.
-            yield return TapKeys(new AutomationKeys { S = true }, 100);
+            yield return TapKeys(new AutomationKeys { S = true }, 40);
             yield return WaitTicks(3);
             _evidence.Metric("m1KeyTestZ", Mathf.Round(_director.Player.transform.position.z * 100f) / 100f);
 
@@ -225,7 +225,6 @@ namespace CK.Runtime.Automation
                     ("itemBarSlots", 4), ("playerHp", 1000), ("enemyHp", 1000), ("combo", 0)));
             _evidence.Metric("keySmokeCovered", "WASD,Space,LMB,RMB,LShift,Q,E,R,F,Tab,M,B,1,2,3,4");
             _evidence.Metric("audioCues", _director.Audio != null ? _director.Audio.PlayedCueCount : 0);
-            _director.EnemyAttacksEnabled = true;
         }
 
         private IEnumerator RunM2()
