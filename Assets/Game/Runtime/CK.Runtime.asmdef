@@ -1,0 +1,19 @@
+{
+    "name": "CK.Runtime",
+    "rootNamespace": "CK.Runtime",
+    "references": [
+        "CK.Domain",
+        "CK.Native",
+        "Unity.InputSystem",
+        "Unity.Newtonsoft.Json"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,16 @@
+{
+    "name": "CK.Native",
+    "rootNamespace": "CK.Native",
+    "references": [
+        "CK.Domain"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

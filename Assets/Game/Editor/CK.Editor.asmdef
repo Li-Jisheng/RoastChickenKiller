@@ -1,0 +1,22 @@
+{
+    "name": "CK.Editor",
+    "rootNamespace": "CK.Editor",
+    "references": [
+        "CK.Domain",
+        "CK.Native",
+        "CK.Runtime",
+        "Unity.InputSystem",
+        "Unity.Newtonsoft.Json"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

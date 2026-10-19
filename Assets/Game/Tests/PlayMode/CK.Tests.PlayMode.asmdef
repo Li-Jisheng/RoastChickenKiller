@@ -1,0 +1,27 @@
+{
+    "name": "CK.Tests.PlayMode",
+    "rootNamespace": "CK.Tests.PlayMode",
+    "references": [
+        "CK.Domain",
+        "CK.Native",
+        "CK.Runtime",
+        "CK.Editor",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

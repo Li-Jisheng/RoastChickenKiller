@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "tickRate": 60,
+  "combat": {
+    "defenseConstant": 100,
+    "minDefense": 0,
+    "rounding": "AwayFromZero",
+    "heavyHoldSeconds": 0.22,
+    "comboWindowSeconds": 0.35,
+    "inputBufferFrames": 10,
+    "dodgeInvulnFrames": 18,
+    "dodgeCooldownFrames": 30,
+    "dodgeDistance": 4.0,
+    "blockMoveMultiplier": 0.3
+  },
+  "world": {
+    "groundSize": 30.0,
+    "gravity": -20.0,
+    "playerSpawn": [0.0, 0.0, 0.0],
+    "playerYaw": 0.0,
+    "enemySpawn": [0.0, 0.0, 2.0],
+    "enemyYaw": 180.0,
+    "cameraPosition": [0.0, 6.0, -9.0],
+    "cameraTarget": [0.0, 1.0, 1.0]
+  },
+  "actors": {
+    "player": {
+      "displayName": "玩家",
+      "faction": "player",
+      "maxHealth": 1000,
+      "attackPower": 100,
+      "defense": 50,
+      "moveSpeed": 5.0,
+      "bodyHitVolumeId": "player_body",
+      "color": "#4C8DFF"
+    },
+    "enemy": {
+      "displayName": "敌人",
+      "faction": "enemy",
+      "maxHealth": 1000,
+      "attackPower": 100,
+      "defense": 50,
+      "moveSpeed": 0.0,
+      "bodyHitVolumeId": "enemy_body",
+      "color": "#E05757"
+    }
+  },
+  "hitVolumes": [
+    {
+      "id": "player_body",
+      "owner": "player",
+      "shape": "Capsule",
+      "radius": 0.5,
+      "height": 2.0,
+      "centerY": 1.0
+    },
+    {
+      "id": "enemy_body",
+      "owner": "enemy",
+      "shape": "Capsule",
+      "radius": 0.5,
+      "height": 2.0,
+      "centerY": 1.0
+    },
+    {
+      "id": "player_sword",
+      "owner": "player",
+      "shape": "Capsule",
+      "source": "weapon",
+      "radiusScale": 1.0
+    },
+    {
+      "id": "enemy_sword",
+      "owner": "enemy",
+      "shape": "Capsule",
+      "source": "weapon",
+      "radiusScale": 1.0
+    }
+  ],
+  "buffs": [
+    {
+      "id": "def_down_50",
+      "displayName": "破防",
+      "stat": "defense",
+      "add": -50,
+      "durationFrames": 600,
+      "stackMode": "Refresh"
+    }
+  ],
+  "abilities": [
+    {
+      "id": "normal_1",
+      "displayName": "普攻一",
+      "slot": "Primary",
+      "multiplier": 1.0,
+      "cooldownFrames": 0,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 9 },
+        { "name": "Active", "startFrame": 10, "endFrame": 15 },
+        { "name": "Recovery", "startFrame": 16, "endFrame": 30 }
+      ],
+      "hitVolume": "player_sword"
+    },
+    {
+      "id": "normal_2",
+      "displayName": "普攻二",
+      "slot": "Primary",
+      "multiplier": 1.0,
+      "cooldownFrames": 0,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 8 },
+        { "name": "Active", "startFrame": 9, "endFrame": 14 },
+        { "name": "Recovery", "startFrame": 15, "endFrame": 28 }
+      ],
+      "hitVolume": "player_sword"
+    },
+    {
+      "id": "normal_3",
+      "displayName": "普攻三",
+      "slot": "Primary",
+      "multiplier": 1.0,
+      "cooldownFrames": 0,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 11 },
+        { "name": "Active", "startFrame": 12, "endFrame": 18 },
+        { "name": "Recovery", "startFrame": 19, "endFrame": 36 }
+      ],
+      "hitVolume": "player_sword"
+    },
+    {
+      "id": "heavy",
+      "displayName": "重击",
+      "slot": "Heavy",
+      "multiplier": 1.5,
+      "cooldownFrames": 0,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 20 },
+        { "name": "Active", "startFrame": 21, "endFrame": 28 },
+        { "name": "Recovery", "startFrame": 29, "endFrame": 55 }
+      ],
+      "hitVolume": "player_sword"
+    },
+    {
+      "id": "block",
+      "displayName": "格挡",
+      "slot": "Block",
+      "multiplier": 0.0,
+      "cooldownFrames": 0,
+      "hold": true,
+      "phases": []
+    },
+    {
+      "id": "dodge",
+      "displayName": "闪避",
+      "slot": "Dodge",
+      "multiplier": 0.0,
+      "cooldownFrames": 30,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 0 },
+        { "name": "Active", "startFrame": 1, "endFrame": 18 },
+        { "name": "Recovery", "startFrame": 19, "endFrame": 29 }
+      ]
+    },
+    {
+      "id": "q_break",
+      "displayName": "破防技能 Q",
+      "slot": "Skill1",
+      "multiplier": 0.5,
+      "cooldownFrames": 480,
+      "onHitBuff": "def_down_50",
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 12 },
+        { "name": "Active", "startFrame": 13, "endFrame": 19 },
+        { "name": "Recovery", "startFrame": 20, "endFrame": 42 }
+      ],
+      "hitVolume": "player_sword"
+    },
+    {
+      "id": "e_placeholder",
+      "displayName": "占位技能 E",
+      "slot": "Skill2",
+      "multiplier": 0.8,
+      "cooldownFrames": 360,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 10 },
+        { "name": "Active", "startFrame": 11, "endFrame": 17 },
+        { "name": "Recovery", "startFrame": 18, "endFrame": 40 }
+      ],
+      "hitVolume": "player_sword"
+    },
+    {
+      "id": "r_placeholder",
+      "displayName": "占位技能 R",
+      "slot": "Skill3",
+      "multiplier": 0.6,
+      "cooldownFrames": 600,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 14 },
+        { "name": "Active", "startFrame": 15, "endFrame": 24 },
+        { "name": "Recovery", "startFrame": 25, "endFrame": 50 }
+      ],
+      "hitVolume": "player_sword"
+    },
+    {
+      "id": "f_placeholder",
+      "displayName": "占位技能 F",
+      "slot": "Skill4",
+      "multiplier": 0.0,
+      "cooldownFrames": 720,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 5 },
+        { "name": "Active", "startFrame": 6, "endFrame": 12 },
+        { "name": "Recovery", "startFrame": 13, "endFrame": 30 }
+      ]
+    },
+    {
+      "id": "enemy_swing",
+      "displayName": "敌人挥剑",
+      "slot": "EnemyAttack",
+      "multiplier": 1.0,
+      "cooldownFrames": 0,
+      "phases": [
+        { "name": "Windup", "startFrame": 0, "endFrame": 29 },
+        { "name": "Active", "startFrame": 30, "endFrame": 41 },
+        { "name": "Recovery", "startFrame": 42, "endFrame": 59 }
+      ],
+      "hitVolume": "enemy_sword"
+    }
+  ],
+  "combo": {
+    "steps": ["normal_1", "normal_2", "normal_3"],
+    "windowFrames": 21
+  },
+  "weapons": [
+    {
+      "id": "sword_01",
+      "displayName": "训练剑 I",
+      "length": 1.6,
+      "radius": 0.08,
+      "damageMultiplier": 1.0,
+      "color": "#9AA4B2",
+      "handOffset": [0.4, 1.1, 0.25]
+    },
+    {
+      "id": "sword_02",
+      "displayName": "训练剑 II",
+      "length": 2.0,
+      "radius": 0.08,
+      "damageMultiplier": 1.0,
+      "color": "#6FB1FF",
+      "handOffset": [0.4, 1.1, 0.25]
+    },
+    {
+      "id": "sword_03",
+      "displayName": "训练剑 III",
+      "length": 1.2,
+      "radius": 0.08,
+      "damageMultiplier": 1.0,
+      "color": "#FFB36F",
+      "handOffset": [0.4, 1.1, 0.25]
+    }
+  ],
+  "loadout": {
+    "weaponSlots": 3,
+    "equipmentSlots": 3,
+    "inventorySlots": 50,
+    "itemBarSlots": 4
+  },
+  "enemyAttack": {
+    "intervalFrames": 120,
+    "abilityId": "enemy_swing",
+    "idleFrames": 60
+  }
+}
