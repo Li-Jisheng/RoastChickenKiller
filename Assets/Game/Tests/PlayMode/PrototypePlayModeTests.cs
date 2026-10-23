@@ -14,8 +14,8 @@ using UnityEngine.TestTools;
 namespace CK.Tests.PlayMode
 {
     /// <summary>
-    /// Real Play Mode tests against the generated CombatPrototype scene.
-    /// Input is injected through the Input System, exactly like the gate driver.
+    /// 针对生成的 CombatPrototype 场景的真实 Play Mode 测试。
+    /// 输入通过 Input System 注入，与 Gate 驱动完全一致。
     /// </summary>
     public sealed class PrototypePlayModeTests
     {

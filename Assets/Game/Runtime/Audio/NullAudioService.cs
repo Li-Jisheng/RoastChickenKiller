@@ -5,8 +5,8 @@ using CK.Domain.Audio;
 namespace CK.Runtime.Audio
 {
     /// <summary>
-    /// Phase 1 has no audio assets. This service records cue ids so the presentation
-    /// layer is exercised and future audio can be attached without code changes.
+    /// 阶段一没有音频资源。本服务记录 cue id，使表现
+    /// 层得到验证，后续接入真实音频无需改代码。
     /// </summary>
     public sealed class NullAudioService : IAudioService
     {

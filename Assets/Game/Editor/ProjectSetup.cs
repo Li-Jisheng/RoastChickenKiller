@@ -12,8 +12,8 @@ using CK.Runtime.Bootstrap;
 namespace CK.Editor
 {
     /// <summary>
-    /// One-shot project baseline setup: DX11-only, 60 Hz, linear color, IL2CPP Win64
-    /// and the generated CombatPrototype scene. Safe to run repeatedly.
+    /// 一次性项目基线设置：仅 DX11、60Hz、线性颜色、IL2CPP Win64
+    /// 以及生成的 CombatPrototype 场景。可安全重复执行。
     /// </summary>
     public static class ProjectSetup
     {
@@ -73,8 +73,8 @@ namespace CK.Editor
         }
 
         /// <summary>
-        /// Runtime-generated materials need URP shaders that are otherwise stripped from
-        /// player builds. Keep Lit/Unlit shaders in the build so Player materials work.
+        /// 运行时生成的材质需要 URP shader，否则会在
+        /// Player 构建中被剥离。把 Lit/Unlit shader 保留在构建中，使 Player 材质可用。
         /// </summary>
         public static void ConfigureAlwaysIncludedShaders()
         {
@@ -209,7 +209,7 @@ namespace CK.Editor
             Debug.Log("[CK] baseline setup done");
         }
 
-        /// <summary>Copies the single source-of-truth JSON into StreamingAssets for Player builds.</summary>
+        /// <summary>把唯一数据源 JSON 复制到 StreamingAssets，供 Player 构建使用。</summary>
         public static void SyncConfigToStreamingAssets()
         {
             string source = Path.Combine(Directory.GetParent(Application.dataPath)?.FullName ?? ".", "Config", "CombatPrototype.json");

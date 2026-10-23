@@ -9,8 +9,8 @@ using UnityEngine;
 namespace CK.Tests.EditMode
 {
     /// <summary>
-    /// Exercises the marshaling and the authoritative rules through the same
-    /// NativeCombatBridge the Unity host uses. No Play Mode required.
+    /// 通过 Unity 主机使用的同一个 NativeCombatBridge 验证封送与权威规则，
+    /// 无需 Play Mode。
     /// </summary>
     public sealed class NativeBridgeTests
     {

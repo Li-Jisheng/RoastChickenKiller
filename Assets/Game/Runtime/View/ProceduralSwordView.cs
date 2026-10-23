@@ -4,8 +4,8 @@ using CK.Domain.Config;
 namespace CK.Runtime.View
 {
     /// <summary>
-    /// Procedural cylinder sword. The same pose drives both the rendered blade and
-    /// the capsule segment submitted for hit detection, so what you see is what hits.
+    /// 程序化圆柱剑。同一个姿态既驱动渲染刀身，也驱动
+    /// 提交给命中检测的胶囊线段，因此“看到哪里就打到哪里”。
     /// </summary>
     public sealed class ProceduralSwordView : MonoBehaviour
     {
@@ -86,7 +86,7 @@ namespace CK.Runtime.View
             ApplyRotation(0f, 0f);
         }
 
-        /// <summary>Pose derived from the native ability state; deterministic per frame.</summary>
+        /// <summary>根据原生技能状态推导姿态；逐帧确定。</summary>
         public void ApplyAbilityPose(AbilityConfig ability, int phase, int frame, bool blocking)
         {
             float yaw = 0f;
@@ -122,8 +122,8 @@ namespace CK.Runtime.View
             }
             else
             {
-                // Rest pose: angled outward so both swords are readable in screenshots.
-                // The enemy is mirrored and opens wider so its blade clears the player body.
+                // 静止姿态：向外张开，使两把剑在截图中都可见。
+                // 敌人镜像并张得更开，使剑刃避开玩家身体。
                 yaw = _swingSign > 0 ? -60f : -110f;
                 pitch = -6f;
             }
@@ -162,7 +162,7 @@ namespace CK.Runtime.View
             }
         }
 
-        /// <summary>World-space capsule segment matching the rendered blade.</summary>
+        /// <summary>与渲染刀身一致的世界空间胶囊线段。</summary>
         public bool TryGetWorldSegment(out Vector3 start, out Vector3 end, out float radius)
         {
             start = Vector3.zero;

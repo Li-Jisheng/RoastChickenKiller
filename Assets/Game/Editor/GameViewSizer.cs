@@ -7,10 +7,10 @@ using UnityEngine;
 namespace CK.Editor
 {
     /// <summary>
-    /// Makes the Play Mode Game View large enough for readable evidence screenshots.
-    /// Strategy: resize the editor window, then maximize the Game View tab; if that
-    /// fails, create a floating Game View window at 1300x800. The actual resolution
-    /// is recorded in summary.json.
+    /// 让 Play Mode Game View 足够大，以生成可读的证据截图。
+    /// 策略：调整编辑器窗口，然后最大化 Game View 标签；如果
+    /// 失败则创建 1300x800 的浮动 Game View。实际分辨率
+    /// 记录在 summary.json 中。
     /// </summary>
     public static class GameViewSizer
     {
@@ -36,7 +36,7 @@ namespace CK.Editor
                 IntPtr handle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
                 if (handle != IntPtr.Zero)
                 {
-                    ShowWindow(handle, 9); // SW_RESTORE
+                    ShowWindow(handle, 9); // SW_RESTORE（恢复窗口）
                     float pixelsPerPoint = EditorGUIUtility.pixelsPerPoint;
                     int physicalWidth = Mathf.RoundToInt(windowWidth * pixelsPerPoint);
                     int physicalHeight = Mathf.RoundToInt(windowHeight * pixelsPerPoint);
@@ -74,7 +74,7 @@ namespace CK.Editor
             }
         }
 
-        /// <summary>Diagnostics entry retained for troubleshooting capture resolution.</summary>
+        /// <summary>保留的诊断入口，用于排查截图分辨率。</summary>
         public static void DumpInfo()
         {
             try

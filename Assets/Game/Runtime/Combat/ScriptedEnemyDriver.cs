@@ -6,8 +6,8 @@ using CK.Native;
 namespace CK.Runtime.Combat
 {
     /// <summary>
-    /// Scripted enemy: no AI, no movement, no decision making. It only submits one
-    /// EnemyAttack command every Config.enemyAttack.intervalFrames ticks.
+    /// 脚本敌人：没有 AI、不移动、不做决策。它只
+    /// 每 Config.enemyAttack.intervalFrames tick 提交一次 EnemyAttack 命令。
     /// </summary>
     public sealed class ScriptedEnemyDriver : MonoBehaviour
     {
@@ -55,7 +55,7 @@ namespace CK.Runtime.Combat
             return true;
         }
 
-        /// <summary>Called by CombatDirector immediately before the native tick.</summary>
+        /// <summary>由 CombatDirector 在原生 tick 之前调用。</summary>
         public void SubmitIfDue(uint tick)
         {
             if (!_initialized || _bridge == null)

@@ -16,9 +16,9 @@ using Newtonsoft.Json.Linq;
 namespace CK.Editor
 {
     /// <summary>
-    /// Command-line / menu entry that enters Play Mode, lets PrototypeAutomation run
-    /// a gate scenario, then merges the test XMLs into summary.json and exits.
-    /// State is kept in SessionState so the play-mode domain reload cannot lose it.
+    /// 命令行/菜单入口：进入 Play Mode，让 PrototypeAutomation 运行
+    /// 一个 Gate 场景，然后把测试 XML 合并进 summary.json 并退出。
+    /// 状态保存在 SessionState 中，避免 Play Mode 的 domain reload 丢失。
     /// </summary>
     public static class GateEntry
     {

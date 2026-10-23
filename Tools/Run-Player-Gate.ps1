@@ -1,7 +1,7 @@
 #requires -Version 5.1
 <#
 .SYNOPSIS
-    Runs a Windows Player gate (M0/M7/STABILITY) and writes evidence.
+    运行 Windows Player Gate（M0/M7/STABILITY）并写入证据。
 
 .EXAMPLE
     powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Run-Player-Gate.ps1 -Module M7

@@ -229,7 +229,7 @@ void handleCommand(Combat& c, const PendingCommand& command, uint32_t tick) {
     }
     if (command.sequence != 0) {
         if (command.sequence <= actor->lastSequence) {
-            return; /* duplicate or stale command */
+            return; /* 重复或过期命令 */
         }
         actor->lastSequence = command.sequence;
     }
@@ -384,7 +384,7 @@ void advanceActor(Combat& c, Actor& actor, uint32_t tick) {
     (void)tick;
 }
 
-} // namespace
+} // 命名空间
 
 Combat::Combat() {
     slotAbility.fill(-1);
@@ -1018,4 +1018,4 @@ void reset(Combat& c) {
     }
 }
 
-} // namespace ck
+} // 命名空间 ck

@@ -1,8 +1,8 @@
 #requires -Version 5.1
 <#
 .SYNOPSIS
-    Runs one Chicken Killer Gate: native CTest, EditMode/PlayMode tests and the
-    interactive Play Mode scenario with screenshots, then prints the verdict.
+    运行一个 Chicken Killer Gate：原生 CTest、EditMode/PlayMode 测试、
+    交互式 Play Mode 场景与截图，最后打印结论。
 
 .EXAMPLE
     powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Run-Gate.ps1 -Module M3
@@ -72,7 +72,7 @@ function Read-NUnitCounts {
     return @{ total = 0; passed = 0; failed = 0; found = $false }
 }
 
-# 1. Native build + CTest
+# 1. 原生构建 + CTest
 if (-not $SkipNative) {
     Write-Host "== Native ==" -ForegroundColor Cyan
     & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $root 'Tools/build_native.ps1') -Configuration Debug
@@ -83,8 +83,8 @@ if (-not $SkipNative) {
     if (Test-Path $ctest) {
         Copy-Item -Force $ctest (Join-Path $evidence 'native-results-ctest.xml')
     }
-    # The native test executable contains 32 cases; CTest sees one executable.
-    # Run it directly and record a JUnit file with the real case count.
+    # 原生测试可执行文件包含 32 个用例；CTest 只看到一个可执行文件。
+    # 直接运行它，并按真实用例数记录 JUnit。
     $nativeExe = Join-Path $root 'Native/build/Debug/ck_native_tests.exe'
     if (Test-Path $nativeExe) {
         $nativeOut = (& $nativeExe 2>&1 | Out-String)
@@ -106,7 +106,7 @@ if (-not $SkipNative) {
     }
 }
 
-# 2. Tests
+# 2. 测试
 if (-not $SkipTests) {
     Write-Host "== EditMode tests ==" -ForegroundColor Cyan
     $editXml = Join-Path $evidence 'editmode-results.xml'
@@ -135,7 +135,7 @@ if (-not $SkipTests) {
     }
 }
 
-# 3. Optional drill config (only JSON changes, code untouched)
+# 3. 可选的演练配置（只改 JSON，不动代码）
 $extraArgs = @()
 if ($Module -eq 'M3_4STEPS' -or $Module -eq 'M6_4SLOTS') {
     Write-Host "== Preparing temporary drill config ==" -ForegroundColor Cyan
@@ -165,7 +165,7 @@ if ($Module -eq 'M3_4STEPS' -or $Module -eq 'M6_4SLOTS') {
     Write-Host "  drill config: $drillPath"
 }
 
-# 4. Interactive Play Mode gate
+# 4. 交互式 Play Mode Gate
 Write-Host "== Play Mode gate $Module ==" -ForegroundColor Cyan
 $sha = ''
 try { $sha = (git -C $root rev-parse HEAD 2>$null) } catch { $sha = '' }
@@ -196,7 +196,7 @@ if (-not $process.WaitForExit($timeoutMs)) {
 }
 Write-Host "  Unity gate exit code: $($process.ExitCode)" -ForegroundColor DarkGray
 
-# 5. Summary
+# 5. 汇总
 $summaryPath = Join-Path $evidence 'summary.json'
 if (-not (Test-Path $summaryPath)) {
     throw "Gate did not produce summary.json: $summaryPath"

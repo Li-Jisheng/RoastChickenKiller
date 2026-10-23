@@ -1,17 +1,17 @@
 #requires -Version 5.1
 <#
 .SYNOPSIS
-    Builds the Chicken Killer native combat core and installs the editor Player plugin.
+    构建 Chicken Killer 原生战斗核心，并安装到编辑器/Player 插件目录。
 
 .DESCRIPTION
-    Configures Native/ with CMake (Visual Studio 2022, x64), builds ck_combat.dll,
-    copies it to Assets/Plugins/Windows/x86_64 and runs CTest.
+    用 CMake（Visual Studio 2022，x64）配置 Native/，构建 ck_combat.dll，
+    复制到 Assets/Plugins/Windows/x86_64，并运行 CTest。
 
 .PARAMETER Configuration
-    Debug (default) or Release.
+    Debug（默认）或 Release。
 
 .PARAMETER SkipTests
-    Skip the CTest run after building.
+    构建后跳过 CTest。
 
 .EXAMPLE
     powershell -NoProfile -File Tools/build_native.ps1 -Configuration Debug

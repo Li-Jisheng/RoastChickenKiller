@@ -63,7 +63,7 @@ namespace CK.Runtime.Automation
         public string Notes = string.Empty;
     }
 
-    /// <summary>Collects screenshots, measured values and the final Gate summary.</summary>
+    /// <summary>收集截图、实测值与最终 Gate summary。</summary>
     public sealed class GateEvidence
     {
         public string Module { get; }

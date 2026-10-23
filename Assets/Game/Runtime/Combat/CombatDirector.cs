@@ -13,9 +13,9 @@ using CK.Runtime.View;
 namespace CK.Runtime.Combat
 {
     /// <summary>
-    /// Unity host for the authoritative native combat core.
-    /// Samples input at 60 Hz, submits commands/volumes, then renders the returned
-    /// events and snapshot. No combat rule is evaluated here.
+    /// 权威原生战斗核心的 Unity 主机。
+    /// 以 60Hz 采样输入、提交命令/体积，然后呈现返回的
+    /// 事件与快照。这里不计算任何战斗规则。
     /// </summary>
     public sealed class CombatDirector : MonoBehaviour
     {
@@ -41,7 +41,7 @@ namespace CK.Runtime.Combat
         public WeaponConfig CurrentWeapon { get; private set; }
         public int LastItemSlot { get; private set; }
         public string LastInputFeedback { get; private set; } = string.Empty;
-        public string LastEventText { get; private set; } = "none";
+        public string LastEventText { get; private set; } = "无";
         public int LastDamage { get; private set; }
         public bool LastOverlap { get; private set; }
         public CombatEventType LastEventType { get; private set; }
@@ -156,13 +156,13 @@ namespace CK.Runtime.Combat
                           $"backend={Input.BackendName} polled={Input.LastPollSucceeded} samples={Input.SampleCount}");
             }
 
-            // 1. Weapon / panel / item intents (host side, no combat rules).
+            // 1. 武器/面板/物品意图（主机侧，不参与战斗规则）。
             HandleHostInput(input);
 
-            // 2. Player movement (uses the snapshot returned by the previous tick).
+            // 2. 玩家移动（使用上一 tick 返回的快照）。
             UpdatePlayerMovement(input);
 
-            // 3. Pose from the current snapshot, then derive the exact hit volumes.
+            // 3. 按当前快照摆剑，然后生成精确的命中体积。
             AbilityConfig playerAbility = GetAbility(PlayerSnapshot != null ? PlayerSnapshot.AbilityIndex : -1);
             AbilityConfig enemyAbility = GetAbility(EnemySnapshot != null ? EnemySnapshot.AbilityIndex : -1);
             Player.ApplySwordPose(playerAbility, PlayerSnapshot, PlayerSnapshot != null && PlayerSnapshot.Blocking);
@@ -184,17 +184,17 @@ namespace CK.Runtime.Combat
                 WeaponActiveHint = enemyWeaponActive ? 1 : 0
             });
 
-            // 4. Combat commands (tap/hold, dodge, skills, block) and enemy script.
+            // 4. 战斗命令（点按/长按、闪避、技能、格挡）与敌人脚本。
             SubmitInputCommands(input, tick);
             if (EnemyAttacksEnabled)
             {
                 EnemyDriver.SubmitIfDue(tick);
             }
 
-            // 5. Authoritative tick.
+            // 5. 权威 tick。
             Bridge.Tick(_frameVolumes);
 
-            // 6. Consume results.
+            // 6. 消费结果。
             _drained.Clear();
             Bridge.DrainEvents(_drained);
             if (_drained.Count > 0)
@@ -253,15 +253,15 @@ namespace CK.Runtime.Combat
             }
             if (input.DodgePressed)
             {
-                LastInputFeedback = "Dodge(RMB/Shift)";
+                LastInputFeedback = "闪避（右键/Shift）";
             }
             if (input.BlockPressed)
             {
-                LastInputFeedback = "Block down";
+                LastInputFeedback = "格挡按下";
             }
             if (input.BlockReleased)
             {
-                LastInputFeedback = "Block up";
+                LastInputFeedback = "格挡松开";
             }
 
             if (input.TabPressed)
@@ -275,7 +275,7 @@ namespace CK.Runtime.Combat
                 {
                     InventoryVisible = false;
                 }
-                LastInputFeedback = MapVisible ? "M: map open" : "M: map closed";
+                LastInputFeedback = MapVisible ? "M：地图打开" : "M：地图关闭";
                 Debug.Log($"[CK] map panel {(MapVisible ? "opened" : "closed")} at tick {Tick}");
             }
             if (input.InventoryPressed)
@@ -285,7 +285,7 @@ namespace CK.Runtime.Combat
                 {
                     MapVisible = false;
                 }
-                LastInputFeedback = InventoryVisible ? "B: inventory open" : "B: inventory closed";
+                LastInputFeedback = InventoryVisible ? "B：背包打开" : "B：背包关闭";
                 Debug.Log($"[CK] inventory panel {(InventoryVisible ? "opened" : "closed")} at tick {Tick}");
             }
 
@@ -310,7 +310,7 @@ namespace CK.Runtime.Combat
             {
                 LastItemSlot = item;
                 ItemSlotHistory.Add(item);
-                LastInputFeedback = $"Item {item}" + (item <= Config.Loadout.ItemBarSlots ? " (empty)" : " (out of range)");
+                LastInputFeedback = $"物品 {item}" + (item <= Config.Loadout.ItemBarSlots ? "（空）" : "（超出栏位）");
                 ItemSlotTriggered?.Invoke(item);
                 Debug.Log($"[CK] item bar {item}/{Config.Loadout.ItemBarSlots} at tick {Tick} (empty slot)");
             }
@@ -365,15 +365,15 @@ namespace CK.Runtime.Combat
             if (Mathf.Abs(position.x - clampedX) > 0.0001f || Mathf.Abs(position.z - clampedZ) > 0.0001f)
             {
                 Player.Teleport(new Vector3(clampedX, position.y, clampedZ));
-                LastInputFeedback = "Ground boundary";
+                LastInputFeedback = "已到地面边界";
             }
             PlayerPlanarSpeed = _lastPlanarSpeed;
         }
 
         private void SubmitInputCommands(InputSnapshot input, uint tick)
         {
-            // Tap / hold classification: release before threshold = primary,
-            // crossing the threshold while held = heavy (exactly once).
+            // 点按/长按判定：在阈值前松开 = 普攻，
+            // 超过阈值仍按住 = 重击（只触发一次）。
             if (input.PrimaryPressed)
             {
                 _primaryHeld = true;
@@ -384,7 +384,7 @@ namespace CK.Runtime.Combat
             {
                 _heavyTriggered = true;
                 Submit(CombatCommandKind.Heavy, tick);
-                LastInputFeedback = "LMB hold -> Heavy";
+                LastInputFeedback = "左键长按 → 重击";
             }
             if (input.PrimaryReleased && _primaryHeld)
             {
@@ -392,7 +392,7 @@ namespace CK.Runtime.Combat
                 if (!_heavyTriggered)
                 {
                     Submit(CombatCommandKind.Primary, tick);
-                    LastInputFeedback = "LMB tap -> Primary";
+                    LastInputFeedback = "左键点按 → 普攻";
                 }
                 _heavyTriggered = false;
             }
@@ -527,9 +527,10 @@ namespace CK.Runtime.Combat
                     break;
             }
 
-            string target = evt.TargetActor == PlayerActorId ? "player" : evt.TargetActor == EnemyActorId ? "enemy" : "-";
+            string target = evt.TargetActor == PlayerActorId ? "玩家" : evt.TargetActor == EnemyActorId ? "敌人" : "-";
+            string reason = evt.Type == CombatEventType.Rejected ? $" 原因={CombatText.Reject(evt.Reason)}" : string.Empty;
             LastEventText =
-                $"t{evt.Tick} {evt.Type} src={evt.SourceActor}->{target} dmg={evt.Amount:0} overlap={(evt.Overlap ? 1 : 0)} def={evt.DefenseBefore}->{evt.DefenseAfter} hp={evt.HealthAfter}";
+                $"第{evt.Tick}帧 {CombatText.Event(evt.Type)} 源{evt.SourceActor}->{target} 值={evt.Amount:0} 重叠={(evt.Overlap ? 1 : 0)} 防御={evt.DefenseBefore}->{evt.DefenseAfter} 生命={evt.HealthAfter}{reason}";
             Debug.Log($"[CK] event {LastEventText} reason={evt.Reason} buff={evt.BuffIndex}");
         }
 
@@ -537,7 +538,7 @@ namespace CK.Runtime.Combat
         {
             if (EnemySwingTicks.Count < 2)
             {
-                return EnemySwingTicks.Count == 1 ? EnemySwingTicks[0].ToString() : "none";
+                return EnemySwingTicks.Count == 1 ? EnemySwingTicks[0].ToString() : "无";
             }
             var parts = new List<string>();
             int start = Math.Max(1, EnemySwingTicks.Count - 4);
@@ -557,7 +558,7 @@ namespace CK.Runtime.Combat
             if (PlayerSnapshot.Busy || PlayerSnapshot.Blocking)
             {
                 WeaponSwitchRejections++;
-                LastInputFeedback = "Tab: switch locked (action)";
+                LastInputFeedback = "Tab：动作中锁定";
                 if (Tick - _weaponSwitchRejectLogTick > 15)
                 {
                     _weaponSwitchRejectLogTick = Tick;
@@ -582,8 +583,8 @@ namespace CK.Runtime.Combat
                 WeaponSwitches++;
                 Audio.PlayCue(AudioCues.WeaponSwitch);
                 LastInputFeedback = CurrentWeapon != null
-                    ? $"Tab: weapon slot {slot + 1}/{Config.Loadout.WeaponSlots} {CurrentWeapon.DisplayName} len={CurrentWeapon.Length:0.##}"
-                    : $"Tab: weapon slot {slot + 1}/{Config.Loadout.WeaponSlots} EMPTY";
+                    ? $"Tab：武器槽 {slot + 1}/{Config.Loadout.WeaponSlots} {CurrentWeapon.DisplayName} 长={CurrentWeapon.Length:0.##}米"
+                    : $"Tab：武器槽 {slot + 1}/{Config.Loadout.WeaponSlots} 空";
                 Debug.Log($"[CK] weapon slot -> {slot + 1}/{Config.Loadout.WeaponSlots} " +
                           (CurrentWeapon != null ? $"{CurrentWeapon.Id} len={CurrentWeapon.Length} r={CurrentWeapon.Radius}" : "<empty>"));
             }
@@ -611,7 +612,7 @@ namespace CK.Runtime.Combat
             PlayerTouchingEnemy = DistanceToEnemy <= contactRadius + skin + 0.12f;
         }
 
-        /// <summary>Resets native state and returns both actors to their spawn transform.</summary>
+        /// <summary>重置原生状态，并把两个角色放回出生变换。</summary>
         public void ResetCombat()
         {
             if (!Initialized)
@@ -638,7 +639,7 @@ namespace CK.Runtime.Combat
             LastDamage = 0;
             LastOverlap = false;
             LastEventType = CombatEventType.None;
-            LastEventText = "reset";
+            LastEventText = "重置";
             BlockedCount = 0;
             DodgedCount = 0;
             HitTakenCount = 0;

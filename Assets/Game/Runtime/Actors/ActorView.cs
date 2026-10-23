@@ -7,8 +7,8 @@ using CK.Runtime.View;
 namespace CK.Runtime.Actors
 {
     /// <summary>
-    /// Runtime cylinder actor: body visual, body collision and a procedural sword.
-    /// Sizes come exclusively from the config hit volumes, never from constants.
+    /// 运行时圆柱角色：身体表现、身体碰撞和程序化剑。
+    /// 尺寸完全来自配置命中体积，绝不来自常量。
     /// </summary>
     public sealed class ActorView : MonoBehaviour
     {
@@ -171,7 +171,7 @@ namespace CK.Runtime.Actors
             }
         }
 
-        /// <summary>Face a world direction instantly; movement direction is camera relative.</summary>
+        /// <summary>立即面向世界方向；移动方向相对相机。</summary>
         public void FaceDirection(Vector3 direction)
         {
             direction.y = 0f;

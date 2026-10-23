@@ -5,8 +5,8 @@ using UnityEngine;
 namespace CK.Runtime.Automation
 {
     /// <summary>
-    /// Counts Unity console errors/exceptions during a Gate run so summary.json can
-    /// prove the console stayed clean (or record exactly what failed).
+    /// 统计 Gate 运行期间的 Unity Console 错误/异常，使 summary.json 能
+    /// 证明 Console 干净（或精确记录失败）。
     /// </summary>
     public static class RuntimeLogRecorder
     {

@@ -6,8 +6,8 @@ using UnityEngine;
 namespace CK.Editor
 {
     /// <summary>
-    /// Editor-side screenshot helper for manual evidence. Gate automation performs its
-    /// own captures on WaitForEndOfFrame; this menu is for humans taking extra shots.
+    /// 编辑器侧人工证据截图辅助工具。Gate 自动化会在 WaitForEndOfFrame
+    /// 自行截图；本菜单供人工补拍。
     /// </summary>
     public static class ScreenshotCapture
     {

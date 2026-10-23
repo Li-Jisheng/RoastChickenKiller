@@ -9,7 +9,7 @@ namespace CK.Domain.Config
         Enemy = 1
     }
 
-    /// <summary>Mirrors the native CK_SLOT_* enum. Order is part of the ABI.</summary>
+    /// <summary>镜像原生 CK_SLOT_* 枚举；顺序属于 ABI。</summary>
     public enum AbilitySlot
     {
         Primary = 0,
@@ -23,7 +23,7 @@ namespace CK.Domain.Config
         EnemyAttack = 8
     }
 
-    /// <summary>Mirrors the native CK_PHASE_* enum.</summary>
+    /// <summary>镜像原生 CK_PHASE_* 枚举。</summary>
     public enum PhaseKind
     {
         Windup = 0,
@@ -108,7 +108,7 @@ namespace CK.Domain.Config
 
         public bool IsWeapon => string.Equals(Source, "weapon", StringComparison.OrdinalIgnoreCase);
 
-        /// <summary>Cylinder-like body volume; radius is used for X/Z, height for Y.</summary>
+        /// <summary>类圆柱身体体积；半径用于 X/Z，高度用于 Y。</summary>
         public override string ToString()
         {
             return IsWeapon ? $"{Id}(weapon, x{RadiusScale:0.##})" : $"{Id}({Shape} r{Radius:0.##} h{Height:0.##})";
@@ -145,7 +145,7 @@ namespace CK.Domain.Config
         public string HitVolumeId;
         public List<PhaseConfig> Phases = new List<PhaseConfig>();
 
-        // Derived by the loader.
+        // 由加载器计算。
         public int ActiveStartFrame = -1;
         public int ActiveEndFrame = -1;
         public int EndFrame;
@@ -205,8 +205,8 @@ namespace CK.Domain.Config
     }
 
     /// <summary>
-    /// Immutable-by-convention snapshot of Config/CombatPrototype.json.
-    /// The loader performs all validation; runtime code never re-interprets JSON.
+    /// 按约定不可变的 Config/CombatPrototype.json 快照。
+    /// 加载器执行全部校验；运行时代码不再解释 JSON。
     /// </summary>
     public sealed class CombatConfig
     {
@@ -225,7 +225,7 @@ namespace CK.Domain.Config
 
         public string SourcePath;
         public string SourceName;
-        /// <summary>FNV-1a hash of the raw JSON, shown on the HUD so screenshots map to data.</summary>
+        /// <summary>原始 JSON 的 FNV-1a 哈希，显示在 HUD 上，便于截图对应数据。</summary>
         public uint RawHash;
 
         private readonly Dictionary<string, int> _abilityIndex = new Dictionary<string, int>(StringComparer.Ordinal);

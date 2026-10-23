@@ -5,7 +5,7 @@ using CK.Domain.Config;
 
 namespace CK.Editor
 {
-    /// <summary>Human-facing config validation window (M0-T05 / Data-Test tooling).</summary>
+    /// <summary>面向人工的配置校验窗口（M0-T05 / 数据测试工具）。</summary>
     public sealed class ConfigValidatorWindow : EditorWindow
     {
         private string _path;
@@ -31,10 +31,10 @@ namespace CK.Editor
             GUILayout.Label("CombatPrototype.json 校验", EditorStyles.boldLabel);
             using (new EditorGUILayout.HorizontalScope())
             {
-                _path = EditorGUILayout.TextField("Path", _path);
-                if (GUILayout.Button("Browse", GUILayout.Width(80)))
+                _path = EditorGUILayout.TextField("路径", _path);
+                if (GUILayout.Button("浏览", GUILayout.Width(80)))
                 {
-                    string selected = EditorUtility.OpenFilePanel("Select config", Path.GetDirectoryName(_path), "json");
+                    string selected = EditorUtility.OpenFilePanel("选择配置", Path.GetDirectoryName(_path), "json");
                     if (!string.IsNullOrEmpty(selected))
                     {
                         _path = selected;
@@ -43,11 +43,11 @@ namespace CK.Editor
             }
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Validate"))
+                if (GUILayout.Button("校验"))
                 {
                     Validate();
                 }
-                if (GUILayout.Button("Reset to project config"))
+                if (GUILayout.Button("重置为项目配置"))
                 {
                     _path = Path.Combine(Directory.GetParent(Application.dataPath)?.FullName ?? ".", "Config", "CombatPrototype.json");
                     Validate();
@@ -62,13 +62,13 @@ namespace CK.Editor
             if (_result.Config != null)
             {
                 CombatConfig config = _result.Config;
-                EditorGUILayout.LabelField("Hash", config.RawHash.ToString("X8"));
-                EditorGUILayout.LabelField("Tick rate", config.TickRate.ToString());
-                EditorGUILayout.LabelField("Abilities", config.Abilities.Count.ToString());
-                EditorGUILayout.LabelField("Weapons", config.Weapons.Count.ToString());
-                EditorGUILayout.LabelField("Buffs", config.Buffs.Count.ToString());
-                EditorGUILayout.LabelField("Loadout", $"weapons={config.Loadout.WeaponSlots} equipment={config.Loadout.EquipmentSlots} inventory={config.Loadout.InventorySlots} itembar={config.Loadout.ItemBarSlots}");
-                EditorGUILayout.LabelField("Combo", string.Join(", ", config.Combo.Steps));
+                EditorGUILayout.LabelField("哈希", config.RawHash.ToString("X8"));
+                EditorGUILayout.LabelField("帧率", config.TickRate.ToString());
+                EditorGUILayout.LabelField("技能数", config.Abilities.Count.ToString());
+                EditorGUILayout.LabelField("武器数", config.Weapons.Count.ToString());
+                EditorGUILayout.LabelField("增益数", config.Buffs.Count.ToString());
+                EditorGUILayout.LabelField("槽位", $"武器={config.Loadout.WeaponSlots} 装备={config.Loadout.EquipmentSlots} 背包={config.Loadout.InventorySlots} 物品栏={config.Loadout.ItemBarSlots}");
+                EditorGUILayout.LabelField("连段", string.Join(", ", config.Combo.Steps));
             }
             foreach (string error in _result.Errors)
             {
@@ -81,11 +81,11 @@ namespace CK.Editor
         {
             _result = CombatConfigLoader.LoadFromFile(_path);
             _summary = _result.Success
-                ? $"PASS: {_result.ErrorSummary}"
-                : $"FAIL ({_result.Errors.Count} errors)";
+                ? $"通过：{_result.ErrorSummary}"
+                : $"失败（{_result.Errors.Count} 个错误）";
             if (_result.Config != null)
             {
-                _summary += $"\nhash={_result.Config.RawHash:X8} abilities={_result.Config.Abilities.Count} weapons={_result.Config.Weapons.Count}";
+                _summary += $"\n哈希={_result.Config.RawHash:X8} 技能={_result.Config.Abilities.Count} 武器={_result.Config.Weapons.Count}";
             }
             if (_result.Success)
             {

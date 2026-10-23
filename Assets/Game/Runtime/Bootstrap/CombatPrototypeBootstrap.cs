@@ -14,9 +14,9 @@ using CK.Runtime.UI;
 namespace CK.Runtime.Bootstrap
 {
     /// <summary>
-    /// Scene entry point. Builds the whole flat prototype world from
-    /// Config/CombatPrototype.json: plane, fixed camera, light, two cylinder actors,
-    /// two swords, HUD and the native combat host.
+    /// 场景入口。根据以下配置构建整个平面原型世界：
+    /// Config/CombatPrototype.json 构建整个平面原型：平面、固定相机、灯光、两个圆柱角色、
+    /// 两把剑、HUD 与原生战斗主机。
     /// </summary>
     public sealed class CombatPrototypeBootstrap : MonoBehaviour
     {
@@ -99,7 +99,7 @@ namespace CK.Runtime.Bootstrap
                 LoadResult = CombatConfigLoader.LoadFromFile(path);
                 if (!LoadResult.Success)
                 {
-                    Fail("Config validation failed: " + LoadResult.ErrorSummary, LoadResult.Config);
+                    Fail("配置校验失败：" + LoadResult.ErrorSummary, LoadResult.Config);
                     return;
                 }
                 config = LoadResult.Config;
@@ -109,7 +109,7 @@ namespace CK.Runtime.Bootstrap
 
             if (!NativeCombatBridge.Probe(out string probeMessage))
             {
-                Fail("Native plugin unavailable: " + probeMessage, config);
+                Fail("原生插件不可用：" + probeMessage, config);
                 return;
             }
             Debug.Log("[CK] " + probeMessage);
@@ -123,7 +123,7 @@ namespace CK.Runtime.Bootstrap
             HitVolumeConfig enemyBody = config.GetActorHitVolume(Faction.Enemy);
             if (playerBody == null || enemyBody == null)
             {
-                Fail("Config is missing player or enemy body hit volume", config);
+                Fail("配置缺少玩家或敌人的身体命中体", config);
                 return;
             }
 
@@ -132,8 +132,8 @@ namespace CK.Runtime.Bootstrap
                 ToVector3(config.World.PlayerSpawn), config.World.PlayerYaw, startWeapon);
             EnemyView = ActorView.Create(CombatDirector.EnemyActorId, config.Actors.Enemy, enemyBody,
                 ToVector3(config.World.EnemySpawn), config.World.EnemyYaw, startWeapon);
-            PlayerView.name = "Player";
-            EnemyView.name = "Enemy";
+            PlayerView.name = "玩家";
+            EnemyView.name = "敌人";
 
             Director = gameObject.GetComponent<CombatDirector>();
             if (Director == null)
@@ -145,7 +145,7 @@ namespace CK.Runtime.Bootstrap
             Hud.Initialize(Director, config);
             if (!string.IsNullOrEmpty(error))
             {
-                Fail("Combat initialization failed: " + error, config);
+                Fail("战斗初始化失败：" + error, config);
                 return;
             }
 
@@ -265,7 +265,7 @@ namespace CK.Runtime.Bootstrap
             }
             if (shader == null)
             {
-                Debug.LogError("[CK] ground shader missing (URP/Lit not included in this build)");
+                Debug.LogError("[CK] 地面 Shader 缺失（构建未包含 URP/Lit）");
                 return;
             }
             var material = new Material(shader) { name = "GroundRuntimeMaterial" };
@@ -320,7 +320,7 @@ namespace CK.Runtime.Bootstrap
         }
     }
 
-    /// <summary>Tiny command line reader used by gate automation and player builds.</summary>
+    /// <summary>用于 Gate 自动化和 Player 构建的简易命令行读取器。</summary>
     public static class CommandLine
     {
         public static string GetValue(string name)

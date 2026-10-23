@@ -123,7 +123,7 @@ int setCombo(Combat& c, const int32_t* indices, int count);
 bool finalize(Combat& c);
 int findAbility(const Combat& c, const char* id);
 
-/* Runtime. */
+/* 运行时。 */
 void submitCommand(Combat& c, const CkCommand& cmd);
 void tick(Combat& c, const CkActorFrame* frames, int frameCount);
 int drainEvents(Combat& c, CkEvent* out, int capacity);
@@ -147,4 +147,4 @@ int phaseForFrame(const Ability& ability, int frame);
 bool isActiveFrame(const Ability& ability, int frame);
 int slotToCommandAbility(const Combat& c, int slot);
 
-} // namespace ck
+} // 命名空间 ck

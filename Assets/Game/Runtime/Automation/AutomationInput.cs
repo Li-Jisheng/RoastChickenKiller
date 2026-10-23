@@ -7,7 +7,7 @@ using CK.Runtime.Input;
 
 namespace CK.Runtime.Automation
 {
-    /// <summary>Desired device state for one automation step.</summary>
+    /// <summary>自动化单步期望的设备状态。</summary>
     public struct AutomationKeys
     {
         public bool W, A, S, D;
@@ -26,9 +26,9 @@ namespace CK.Runtime.Automation
     }
 
     /// <summary>
-    /// Injects input through the Input System event queue (the same path real
-    /// keyboard/mouse input takes). This keeps Play Mode automation honest:
-    /// the game reads devices, not an automation-only shortcut.
+    /// 通过 Input System 事件队列注入输入（与真实键盘/鼠标输入
+    /// 的路径相同）。这保证 Play Mode 自动化的诚实性：
+    /// 游戏读取设备，而不是走自动化专用捷径。
     /// </summary>
     public sealed class AutomationInput
     {
@@ -62,9 +62,9 @@ namespace CK.Runtime.Automation
                 {
                     EnsureDevices();
                 }
-                // The harness state is what the game actually polls (see DeviceInputBackend);
-                // the Input System events below keep the virtual devices in sync as evidence
-                // that the real input path is still wired up.
+                // harness 状态才是游戏实际轮询的状态（见 DeviceInputBackend）；
+                // 下面的 Input System 事件让虚拟设备保持同步，作为
+                // 真实输入路径仍然连通的证据。
                 CK.Runtime.Input.AutomationInputState.Set(new RawInputState
                 {
                     W = keys.W, A = keys.A, S = keys.S, D = keys.D,

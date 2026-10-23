@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace CK.Runtime.Input
 {
-    /// <summary>Raw device state; the only layer that knows about the Input System.</summary>
+    /// <summary>原始设备状态；唯一了解 Input System 的层。</summary>
     public struct RawInputState
     {
         public bool W, A, S, D;
@@ -24,10 +24,10 @@ namespace CK.Runtime.Input
     }
 
     /// <summary>
-    /// Deterministic state source used by gate automation. Automated Play Mode runs
-    /// inject Input System events, but the editor's input update clears synthetic
-    /// device state; the harness overrides the polled state so the exact same
-    /// PrototypeInput -> command buffer -> native tick path stays deterministic.
+    /// Gate 自动化使用的确定性状态源。自动化 Play Mode 运行会
+    /// 注入 Input System 事件，但编辑器的输入更新会清空合成
+    /// 设备状态；harness 覆盖轮询结果，使同一条
+    /// PrototypeInput -> 命令缓冲 -> 原生 tick 路径保持确定性。
     /// </summary>
     public static class AutomationInputState
     {
@@ -48,21 +48,21 @@ namespace CK.Runtime.Input
     }
 
     /// <summary>
-    /// Reads the new Input System devices directly. Works for real keyboard/mouse
-    /// input and for automation that injects Input System state events.
+    /// 直接读取新版 Input System 设备。适用于真实键盘/鼠标
+    /// 输入，也适用于注入 Input System 状态事件的自动化。
     /// </summary>
     public sealed class DeviceInputBackend : IPrototypeInputBackend
     {
         /// <summary>
-        /// When gate automation runs it installs dedicated virtual devices here so
-        /// its injected state cannot be overwritten by the OS device state.
+        /// Gate 自动化运行时在这里安装专用虚拟设备，使
+        /// 其注入状态不会被 OS 设备状态覆盖。
         /// </summary>
         public static Keyboard KeyboardOverride;
         public static Mouse MouseOverride;
 
         public string Name => AutomationInputState.Active
-            ? "InputSystem(Keyboard/Mouse)+AutomationHarness"
-            : "InputSystem(Keyboard/Mouse)";
+            ? "输入系统（键盘/鼠标）+ 自动化测试"
+            : "输入系统（键盘/鼠标）";
 
         public bool Poll(out RawInputState state)
         {
@@ -135,8 +135,8 @@ namespace CK.Runtime.Input
     }
 
     /// <summary>
-    /// Edge detection and buffering-friendly conversion from raw devices to
-    /// high level intents. Sampled once per fixed tick so logic stays 60 Hz.
+    /// 把原始设备状态转换为带边沿检测、便于缓冲的高层意图。
+    /// 每固定 tick 采样一次，保持 60Hz。
     /// </summary>
     public sealed class PrototypeInput
     {

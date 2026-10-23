@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CK.Domain.Combat
 {
-    /// <summary>Mirrors the native CK_EV_* enum. Values are ABI.</summary>
+    /// <summary>镜像原生 CK_EV_* 枚举；数值属于 ABI。</summary>
     public enum CombatEventType
     {
         None = 0,
@@ -21,7 +21,7 @@ namespace CK.Domain.Combat
         DodgeStarted = 12
     }
 
-    /// <summary>Mirrors the native CK_REJECT_* enum.</summary>
+    /// <summary>镜像原生 CK_REJECT_* 枚举。</summary>
     public enum CombatRejectReason
     {
         None = 0,
@@ -33,7 +33,7 @@ namespace CK.Domain.Combat
         State = 6
     }
 
-    /// <summary>Mirrors the native CK_CMD_* enum.</summary>
+    /// <summary>镜像原生 CK_CMD_* 枚举。</summary>
     public enum CombatCommandKind
     {
         None = 0,
@@ -75,7 +75,7 @@ namespace CK.Domain.Combat
         }
     }
 
-    /// <summary>Managed mirror of CkActorSnapshot. No native handles escape the bridge.</summary>
+    /// <summary>CkActorSnapshot 的托管镜像；原生句柄不会泄漏到桥之外。</summary>
     public sealed class ActorSnapshot
     {
         public int ActorId;
@@ -89,7 +89,7 @@ namespace CK.Domain.Combat
         public bool Invulnerable;
         public bool Busy;
         public int AbilityIndex;
-        public int Phase; // -1 none, 0 windup, 1 active, 2 recovery
+        public int Phase; // -1 无，0 起手，1 生效，2 收招
         public int AbilityFrame;
         public int ComboStep;
         public int ComboCount;
@@ -123,7 +123,7 @@ namespace CK.Domain.Combat
         }
     }
 
-    /// <summary>Per-tick world volumes submitted to the native core.</summary>
+    /// <summary>每 tick 提交给原生核心的世界空间体积。</summary>
     public struct CapsuleVolume
     {
         public float Ax, Ay, Az;

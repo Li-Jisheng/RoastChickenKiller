@@ -26,7 +26,7 @@ bool checkHandle(void* handle) {
     return true;
 }
 
-} // namespace
+} // 命名空间
 
 extern "C" {
 
@@ -206,4 +206,4 @@ void ck_combat_reset(void* handle) {
     ck::reset(*toCombat(handle));
 }
 
-} // extern "C"
+} // extern "C" 导出

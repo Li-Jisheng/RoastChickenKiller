@@ -1,7 +1,7 @@
-// Native combat core tests (CTest).
-// These tests exercise the authoritative rules: damage formula, phase windows,
-// hit latch, combo chain, input buffering, block/dodge immunity, buffs and
-// configuration validation.
+// 原生战斗核心测试（CTest）。
+// 这些测试覆盖权威规则：伤害公式、阶段窗口、
+// 命中锁存、连段、输入缓冲、格挡/闪避免疫、Buff 与
+// 配置校验。
 
 #include "core/combat_core.h"
 
@@ -56,8 +56,8 @@ void fail(const char* file, int line, const std::string& message) {
         }                                                                                           \
     } while (0)
 
-/* Local descriptor mirrors used only to keep the test setup readable; the
- * public ABI takes scalar arguments so it stays IL2CPP friendly. */
+/* 本地描述结构只用于让测试设置更易读；
+ * 公共 ABI 使用标量参数，以保持 IL2CPP 兼容。 */
 struct CkPhaseDesc {
     int32_t kind;
     int32_t startFrame;
@@ -157,8 +157,8 @@ CkGlobalConfig globalConfig() {
     return g;
 }
 
-/* Local descriptor mirrors used only to keep the test setup readable; the
- * public ABI takes scalar arguments so it stays IL2CPP friendly. */
+/* 本地描述结构只用于让测试设置更易读；
+ * 公共 ABI 使用标量参数，以保持 IL2CPP 兼容。 */
 int addAbilityCompat(ck::Combat& c, const CkAbilityDesc& desc) {
     int32_t triples[CK_MAX_PHASES * 3] = {};
     for (int i = 0; i < desc.phaseCount; ++i) {
@@ -350,7 +350,7 @@ struct Harness {
 };
 
 // ---------------------------------------------------------------------------
-// Tests
+// 测试
 // ---------------------------------------------------------------------------
 
 void test_abi_and_formula() {
@@ -848,7 +848,7 @@ struct TestCase {
     void (*function)();
 };
 
-} // namespace
+} // 命名空间
 
 int main() {
     const TestCase tests[] = {

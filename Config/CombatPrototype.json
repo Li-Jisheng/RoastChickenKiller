@@ -25,7 +25,7 @@
   },
   "actors": {
     "player": {
-      "displayName": "Player",
+      "displayName": "玩家",
       "faction": "player",
       "maxHealth": 1000,
       "attackPower": 100,
@@ -35,7 +35,7 @@
       "color": "#4C8DFF"
     },
     "enemy": {
-      "displayName": "Enemy",
+      "displayName": "敌人",
       "faction": "enemy",
       "maxHealth": 1000,
       "attackPower": 100,
@@ -80,7 +80,7 @@
   "buffs": [
     {
       "id": "def_down_50",
-      "displayName": "Defense Break",
+      "displayName": "破防",
       "stat": "defense",
       "add": -50,
       "durationFrames": 600,
@@ -90,7 +90,7 @@
   "abilities": [
     {
       "id": "normal_1",
-      "displayName": "Normal 1",
+      "displayName": "普攻 1",
       "slot": "Primary",
       "multiplier": 1.0,
       "cooldownFrames": 0,
@@ -103,7 +103,7 @@
     },
     {
       "id": "normal_2",
-      "displayName": "Normal 2",
+      "displayName": "普攻 2",
       "slot": "Primary",
       "multiplier": 1.0,
       "cooldownFrames": 0,
@@ -116,7 +116,7 @@
     },
     {
       "id": "normal_3",
-      "displayName": "Normal 3",
+      "displayName": "普攻 3",
       "slot": "Primary",
       "multiplier": 1.0,
       "cooldownFrames": 0,
@@ -129,7 +129,7 @@
     },
     {
       "id": "heavy",
-      "displayName": "Heavy",
+      "displayName": "重击",
       "slot": "Heavy",
       "multiplier": 1.5,
       "cooldownFrames": 0,
@@ -142,7 +142,7 @@
     },
     {
       "id": "block",
-      "displayName": "Block",
+      "displayName": "格挡",
       "slot": "Block",
       "multiplier": 0.0,
       "cooldownFrames": 0,
@@ -151,7 +151,7 @@
     },
     {
       "id": "dodge",
-      "displayName": "Dodge",
+      "displayName": "闪避",
       "slot": "Dodge",
       "multiplier": 0.0,
       "cooldownFrames": 30,
@@ -163,7 +163,7 @@
     },
     {
       "id": "q_break",
-      "displayName": "Q Break",
+      "displayName": "破防",
       "slot": "Skill1",
       "multiplier": 0.5,
       "cooldownFrames": 480,
@@ -177,7 +177,7 @@
     },
     {
       "id": "e_placeholder",
-      "displayName": "E Placeholder",
+      "displayName": "占位技能 1",
       "slot": "Skill2",
       "multiplier": 0.8,
       "cooldownFrames": 360,
@@ -190,7 +190,7 @@
     },
     {
       "id": "r_placeholder",
-      "displayName": "R Placeholder",
+      "displayName": "占位技能 2",
       "slot": "Skill3",
       "multiplier": 0.6,
       "cooldownFrames": 600,
@@ -203,7 +203,7 @@
     },
     {
       "id": "f_placeholder",
-      "displayName": "F Placeholder",
+      "displayName": "占位技能 3",
       "slot": "Skill4",
       "multiplier": 0.0,
       "cooldownFrames": 720,
@@ -215,7 +215,7 @@
     },
     {
       "id": "enemy_swing",
-      "displayName": "Enemy Swing",
+      "displayName": "敌人挥剑",
       "slot": "EnemyAttack",
       "multiplier": 1.0,
       "cooldownFrames": 0,
@@ -234,7 +234,7 @@
   "weapons": [
     {
       "id": "sword_01",
-      "displayName": "Training Sword I",
+      "displayName": "训练剑 I",
       "length": 1.6,
       "radius": 0.08,
       "damageMultiplier": 1.0,
@@ -243,7 +243,7 @@
     },
     {
       "id": "sword_02",
-      "displayName": "Training Sword II",
+      "displayName": "训练剑 II",
       "length": 2.0,
       "radius": 0.08,
       "damageMultiplier": 1.0,
@@ -252,7 +252,7 @@
     },
     {
       "id": "sword_03",
-      "displayName": "Training Sword III",
+      "displayName": "训练剑 III",
       "length": 1.2,
       "radius": 0.08,
       "damageMultiplier": 1.0,

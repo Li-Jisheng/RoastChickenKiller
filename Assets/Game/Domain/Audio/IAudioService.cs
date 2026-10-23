@@ -1,9 +1,9 @@
 namespace CK.Domain.Audio
 {
     /// <summary>
-    /// Audio is out of scope for phase 1. The interface and cue ids exist so the
-    /// presentation layer already emits the right events; a real service can be
-    /// plugged in later without touching combat code.
+    /// 阶段一不包含音频资源。保留接口与 cue id，
+    /// 使表现层已经能发出正确事件；后续可以接入真实服务，
+    /// 而无需改动战斗代码。
     /// </summary>
     public interface IAudioService
     {

@@ -41,9 +41,9 @@ namespace CK.Domain.Config
     }
 
     /// <summary>
-    /// Single entry point for reading Config/CombatPrototype.json.
-    /// Produces a fully validated DTO graph or a list of human readable errors;
-    /// it never silently falls back to defaults for gameplay values.
+    /// 读取 Config/CombatPrototype.json 的唯一入口。
+    /// 生成完整校验的 DTO 图或一组可读错误；
+    /// 绝不会对玩法数值静默回退默认值。
     /// </summary>
     public static class CombatConfigLoader
     {
@@ -133,7 +133,7 @@ namespace CK.Domain.Config
         }
 
         // ------------------------------------------------------------------
-        // Parsing
+        // 解析
         // ------------------------------------------------------------------
 
         private static CombatRules ParseCombat(Reader reader, JObject root)
@@ -444,7 +444,7 @@ namespace CK.Domain.Config
         }
 
         // ------------------------------------------------------------------
-        // Semantic validation
+        // 语义校验
         // ------------------------------------------------------------------
 
         private static void Validate(CombatConfig config, List<string> errors)
@@ -716,7 +716,7 @@ namespace CK.Domain.Config
                 }
             }
 
-            // Player-facing controls must exist for a playable prototype.
+            // 可玩原型必须存在面向玩家的控制技能。
             if (config.FindAbilityBySlot(AbilitySlot.Primary) == null)
             {
                 errors.Add("no ability uses slot Primary");
@@ -818,7 +818,7 @@ namespace CK.Domain.Config
         }
 
         // ------------------------------------------------------------------
-        // Helpers
+        // 辅助函数
         // ------------------------------------------------------------------
 
         private static bool TryParseSlot(string text, out AbilitySlot slot)
@@ -970,7 +970,7 @@ namespace CK.Domain.Config
                 return token.Value<string>();
             }
 
-            /// <summary>Missing is allowed; present values must be strings.</summary>
+            /// <summary>允许缺失；存在时必须是字符串。</summary>
             public string OptionalString(JObject owner, string name, string fallback)
             {
                 JToken token = owner?[name];
@@ -986,7 +986,7 @@ namespace CK.Domain.Config
                 return token.Value<string>();
             }
 
-            /// <summary>Missing is allowed; present values must be numbers.</summary>
+            /// <summary>允许缺失；存在时必须是数字。</summary>
             public float OptionalFloat(JObject owner, string name, float fallback)
             {
                 JToken token = owner?[name];

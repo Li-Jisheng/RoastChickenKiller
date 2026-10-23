@@ -1,15 +1,13 @@
 /*
- * Chicken Killer - native combat core C ABI (phase 1).
+ * Chicken Killer - 原生战斗核心 C ABI（阶段一）。
  *
- * Ownership: Architect freezes this header; Native implements it.
- * The C++ core is authoritative for ability state, cooldowns, buffs,
- * hit queries and the damage formula. C# only submits configuration,
- * per-tick hit volumes and commands, then reads events/snapshots.
+ * 所有权：架构师冻结本头文件，Native 侧实现。
+ * C++ 核心是技能状态、冷却、Buff、命中查询与伤害公式的权威；
+ * C# 只提交配置、每 tick 的命中体积和命令，然后读取事件/快照。
  *
- * Interop note: every struct here is blittable and contains only scalars or
- * fixed arrays of scalars. Configuration is passed through scalar builder
- * calls (no structs containing strings) so the same ABI works in the Unity
- * Editor (Mono) and IL2CPP players.
+ * 互操作说明：这里所有结构体都是 blittable 的，只包含标量或标量定长数组。
+ * 配置通过标量 builder 调用传入（不使用含字符串的结构体），因此同一套 ABI
+ * 可同时用于 Unity Editor（Mono）与 IL2CPP Player。
  */
 #ifndef CK_COMBAT_H
 #define CK_COMBAT_H
@@ -41,7 +39,7 @@ extern "C" {
 #define CK_MAX_ID 64
 #define CK_MAX_EVENTS 512
 
-/* Ability slots. Structural identifiers, not gameplay values. */
+/* 技能槽位。结构性标识，不是玩法数值。 */
 enum {
     CK_SLOT_PRIMARY = 0,
     CK_SLOT_HEAVY = 1,
@@ -55,14 +53,14 @@ enum {
     CK_SLOT_COUNT = 9
 };
 
-/* Ability phase kinds. */
+/* 技能阶段类型。 */
 enum {
     CK_PHASE_WINDUP = 0,
     CK_PHASE_ACTIVE = 1,
     CK_PHASE_RECOVERY = 2
 };
 
-/* Command kinds submitted by the Unity host. */
+/* Unity 主机提交的命令类型。 */
 enum {
     CK_CMD_NONE = 0,
     CK_CMD_PRIMARY = 1,
@@ -78,7 +76,7 @@ enum {
     CK_CMD_ACTIVATE_ABILITY = 11
 };
 
-/* Event types. */
+/* 事件类型。 */
 enum {
     CK_EV_NONE = 0,
     CK_EV_HIT = 1,
@@ -95,7 +93,7 @@ enum {
     CK_EV_DODGE_STARTED = 12
 };
 
-/* Rejection reasons carried by CK_EV_REJECTED. */
+/* CK_EV_REJECTED 携带的拒绝原因。 */
 enum {
     CK_REJECT_NONE = 0,
     CK_REJECT_COOLDOWN = 1,
@@ -106,7 +104,7 @@ enum {
     CK_REJECT_STATE = 6
 };
 
-/* Buff stat / stack modes. */
+/* Buff 属性/叠加模式。 */
 enum { CK_STAT_DEFENSE = 0 };
 enum { CK_STACK_REFRESH = 0 };
 
@@ -198,9 +196,9 @@ CK_API void* ck_combat_create(const CkGlobalConfig* cfg);
 CK_API void ck_combat_destroy(void* handle);
 
 /*
- * Configuration builders. `phaseTriples` is an array of phaseCount*3 int32
- * values laid out as {kind, startFrame, endFrame}. All return the new index or
- * -1 on failure (ck_get_last_error() has the reason).
+ * 配置构建函数。`phaseTriples` 是一个 phaseCount*3 的 int32 数组，
+ * 按 {kind, startFrame, endFrame} 排列。成功返回新索引，失败返回 -1
+ * （原因见 ck_get_last_error()）。
  */
 CK_API int32_t ck_combat_add_ability_ex(void* handle, const char* id, int32_t slot,
                                         float multiplier, int32_t cooldownFrames, int32_t hold,
@@ -217,7 +215,7 @@ CK_API int32_t ck_combat_find_ability(void* handle, const char* id);
 CK_API uint32_t ck_combat_config_hash(void* handle);
 CK_API int32_t ck_combat_actor_count(void* handle);
 
-/* Runtime. */
+/* 运行时。 */
 CK_API void ck_combat_submit_command(void* handle, const CkCommand* cmd);
 CK_API void ck_combat_tick(void* handle, const CkActorFrame* frames, int32_t frameCount);
 CK_API int32_t ck_combat_drain_events(void* handle, CkEvent* out, int32_t capacity);
@@ -229,4 +227,4 @@ CK_API void ck_combat_reset(void* handle);
 }
 #endif
 
-#endif /* CK_COMBAT_H */
+#endif /* CK_COMBAT_H 头文件保护 */

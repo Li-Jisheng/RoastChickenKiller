@@ -8,8 +8,8 @@ using UnityEngine;
 namespace CK.Editor
 {
     /// <summary>
-    /// Windows x64 player builds. DX11-only is enforced by ProjectSetup before every
-    /// build, and Config/CombatPrototype.json is copied into StreamingAssets.
+    /// Windows x64 Player 构建。每次构建前由 ProjectSetup 强制仅 DX11，
+    /// 并把 Config/CombatPrototype.json 复制到 StreamingAssets。
     /// </summary>
     public static class BuildScript
     {
@@ -28,7 +28,7 @@ namespace CK.Editor
             Build(ScriptingImplementation.IL2CPP, BuildOptions.None, Il2CppOutput);
         }
 
-        /// <summary>Entry point for -executeMethod BuildScript.BuildIl2CppCli.</summary>
+        /// <summary>-executeMethod BuildScript.BuildIl2CppCli 的入口。</summary>
         public static void BuildIl2CppCli()
         {
             Build(ScriptingImplementation.IL2CPP, BuildOptions.None, Il2CppOutput);

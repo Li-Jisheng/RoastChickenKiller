@@ -11,9 +11,9 @@ using CK.Runtime.Combat;
 namespace CK.Runtime.Automation
 {
     /// <summary>
-    /// Play Mode gate driver. Runs a deterministic scenario in the real editor/player
-    /// loop (input is injected through the Input System), captures Game View
-    /// screenshots and writes TestArtifacts/&lt;module&gt;/&lt;timestamp&gt;/summary.json.
+    /// Play Mode Gate 驱动。在真实编辑器/Player 循环中运行确定性场景
+    /// （输入通过 Input System 注入），捕获 Game View
+    /// 截图，并写入 TestArtifacts/&lt;module&gt;/&lt;timestamp&gt;/summary.json。
     /// </summary>
     public sealed class PrototypeAutomation : MonoBehaviour
     {
@@ -156,7 +156,7 @@ namespace CK.Runtime.Automation
         }
 
         // ------------------------------------------------------------------
-        // Scenarios
+        // 场景
         // ------------------------------------------------------------------
 
         private IEnumerator RunM0()
@@ -182,20 +182,20 @@ namespace CK.Runtime.Automation
                 Expect(("playerHp", 1000), ("enemyHp", 1000), ("playerDef", 50), ("enemyDef", 50),
                     ("weaponSlot", 1), ("weaponSlots", 3), ("combo", 0)));
 
-            // Move far out of the enemy's reach first: M1 is an input-mapping gate and
-            // must not produce combat damage. All subsequent keys are still sampled
-            // through the real input/command path, but the sword cannot reach.
+            // 先远离敌人：M1 是输入映射门禁，
+            // 不能产生战斗伤害。后续按键仍通过
+            // 真实输入/命令路径，但剑够不到。
             yield return TapKeys(new AutomationKeys { S = true }, 40);
             yield return WaitTicks(3);
             _evidence.Metric("m1KeyTestZ", Mathf.Round(_director.Player.transform.position.z * 100f) / 100f);
 
-            // Exercise every mapped key through the Input System path and log feedback.
+            // 通过 Input System 路径逐一测试所有映射按键并记录反馈。
             yield return TapKeys(AutomationKeys.MoveW, 6);
             yield return TapKeys(new AutomationKeys { A = true }, 6);
             yield return TapKeys(new AutomationKeys { S = true }, 6);
             yield return TapKeys(new AutomationKeys { D = true }, 6);
-            // Hold block while pressing combat keys: M1 proves the mapping and HUD/log
-            // feedback without starting any attack or skill (they are rejected).
+            // 按住格挡时按下战斗键：M1 验证映射和 HUD/日志
+            // 反馈，而不启动任何攻击/技能（它们会被拒绝）。
             var block = new AutomationKeys { Space = true };
             _input.Apply(block);
             yield return WaitTicks(3);
@@ -246,7 +246,7 @@ namespace CK.Runtime.Automation
             yield return Capture("02_after_move.png", "M2 移动后：WASD 位移与 HUD 坐标同步变化",
                 Expect(("playerX", 2.08f), ("playerZ", 0f), ("enemyHp", 1000)));
 
-            // A / S directions (TC-04 requires all four WASD directions).
+            // A / S 方向（TC-04 要求 WASD 四个方向）。
             yield return ResetState();
             float baseX = _director.Player.transform.position.x;
             yield return TapKeys(new AutomationKeys { A = true }, 25);
@@ -462,7 +462,7 @@ namespace CK.Runtime.Automation
             yield return Capture("02_weapon_2.png", "M6 武器槽 2/3：训练剑 II，长度 2.0m，颜色变化",
                 Expect(("weaponSlot", 2), ("weaponId", "sword_02")));
 
-            // Prove attacks still work after switching to the longer slot-2 sword.
+            // 证明切换到更长的 2 号槽武器后攻击仍然有效。
             yield return TapPrimary();
             yield return WaitUntil(() => Enemy != null && Mathf.RoundToInt(Enemy.Health) == 933, 90,
                 "M6 attack after weapon switch");
@@ -549,7 +549,7 @@ namespace CK.Runtime.Automation
                 Expect(("graphicsDevice", "Direct3D11"), ("playerHp", 1000), ("enemyHp", 1000),
                     ("build", Application.isEditor ? "Editor" : "Player")));
 
-            // Phase A: movement, three-hit combo, heavy, incoming attack, block, dodge.
+            // 阶段 A：移动、三段连击、重击、敌人命中、格挡、闪避。
             yield return TapKeys(AutomationKeys.MoveW, 60);
             yield return WaitTicks(3);
             yield return TapPrimary();
@@ -586,9 +586,9 @@ namespace CK.Runtime.Automation
             _evidence.Metric("phaseADodged", _director.DodgedCount);
             _evidence.Metric("phaseASwings", _director.EnemySwingTicks.Count);
 
-            // Phase B: deterministic Q -> normal -> heavy damage demonstration.
-            // Resetting is documented in summary notes: it keeps the expected damage
-            // numbers stable while every mechanic above stays demonstrated.
+            // 阶段 B：确定性的 Q -> 普攻 -> 重击伤害演示。
+            // 重置原因记录在 summary 备注中：它让期望伤害
+            // 数值稳定，同时上面每个机制都得到演示。
             yield return ResetState();
             yield return TapKeys(new AutomationKeys { Tab = true }, 3);
             yield return WaitUntil(() => _director.WeaponSlotIndex == 1, 30, "M7 weapon switch");
@@ -718,7 +718,7 @@ namespace CK.Runtime.Automation
         }
 
         // ------------------------------------------------------------------
-        // Helpers
+        // 辅助函数
         // ------------------------------------------------------------------
 
         private IEnumerator ResetState()
@@ -760,7 +760,7 @@ namespace CK.Runtime.Automation
             yield return new WaitForFixedUpdate();
         }
 
-        /// <summary>Tap one key while keeping a base state (e.g. block) held.</summary>
+        /// <summary>在保持某个基础状态（如格挡）的同时点按一个键。</summary>
         private IEnumerator TapWhileHolding(AutomationKeys held, AutomationKeys tap, int holdTicks)
         {
             if (_fatal)

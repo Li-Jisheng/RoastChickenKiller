@@ -7,8 +7,8 @@ using CK.Domain.Config;
 namespace CK.Native
 {
     /// <summary>
-    /// Thin, allocation-light P/Invoke layer over ck_combat.dll.
-    /// All gameplay decisions stay in C++; this class only maps DTOs.
+    /// ck_combat.dll 之上的轻量、低分配 P/Invoke 层。
+    /// 所有玩法决策都在 C++；本类只做 DTO 映射。
     /// </summary>
     public sealed class NativeCombatBridge : IDisposable
     {
@@ -35,11 +35,11 @@ namespace CK.Native
             {
                 try
                 {
-                    return Marshal.PtrToStringAnsi(ck_get_build_info()) ?? "unknown";
+                    return Marshal.PtrToStringAnsi(ck_get_build_info()) ?? "未知";
                 }
                 catch (Exception ex)
                 {
-                    return $"unavailable ({ex.GetType().Name})";
+                    return $"不可用（{ex.GetType().Name}）";
                 }
             }
         }
@@ -64,11 +64,11 @@ namespace CK.Native
             }
             catch (Exception)
             {
-                return "native library unavailable";
+                return "原生库不可用";
             }
         }
 
-        /// <summary>Checks that the native plugin loads and reports ABI 1.</summary>
+        /// <summary>检查原生插件能否加载并报告 ABI 1。</summary>
         public static bool Probe(out string message)
         {
             try
@@ -76,30 +76,30 @@ namespace CK.Native
                 int abi = ck_get_abi_version();
                 if (abi != AbiVersion)
                 {
-                    message = $"ck_combat ABI mismatch: expected {AbiVersion}, got {abi}";
+                    message = $"ck_combat ABI 版本不匹配：期望 {AbiVersion}，实际 {abi}";
                     return false;
                 }
-                message = $"ck_combat ABI {abi}: {BuildInfo}";
+                message = $"ck_combat ABI {abi}：{BuildInfo}";
                 return true;
             }
             catch (DllNotFoundException)
             {
-                message = "ck_combat.dll not found. Run Tools/build_native.ps1 to build and install the plugin.";
+                message = "找不到 ck_combat.dll。请先运行 Tools/build_native.ps1 构建并安装插件。";
                 return false;
             }
             catch (EntryPointNotFoundException ex)
             {
-                message = $"ck_combat.dll is stale (missing export): {ex.Message}";
+                message = $"ck_combat.dll 过旧（缺少导出）：{ex.Message}";
                 return false;
             }
             catch (BadImageFormatException ex)
             {
-                message = $"ck_combat.dll has the wrong architecture: {ex.Message}";
+                message = $"ck_combat.dll 架构错误：{ex.Message}";
                 return false;
             }
             catch (Exception ex)
             {
-                message = $"ck_combat load failed: {ex}";
+                message = $"ck_combat 加载失败：{ex}";
                 return false;
             }
         }
@@ -111,12 +111,12 @@ namespace CK.Native
             error = string.Empty;
             if (config == null)
             {
-                error = "config is null";
+                error = "配置为空";
                 return false;
             }
             if (config.Abilities.Count > MaxAbilities || config.Buffs.Count > MaxBuffs)
             {
-                error = $"config exceeds native capacity (abilities {config.Abilities.Count}/{MaxAbilities}, buffs {config.Buffs.Count}/{MaxBuffs})";
+                error = $"配置超过原生容量（技能 {config.Abilities.Count}/{MaxAbilities}，Buff {config.Buffs.Count}/{MaxBuffs}）";
                 return false;
             }
 
@@ -141,11 +141,11 @@ namespace CK.Native
                 _handle = ck_combat_create(ref global);
                 if (_handle == IntPtr.Zero)
                 {
-                    error = "ck_combat_create failed: " + GetLastError();
+                    error = "创建原生战斗核心失败：" + GetLastError();
                     return false;
                 }
 
-                // Buffs must exist before abilities so onHitBuff indices resolve.
+                // Buff 必须先于技能注册，这样 onHitBuff 索引才能解析。
                 for (int i = 0; i < config.Buffs.Count; i++)
                 {
                     BuffConfig buff = config.Buffs[i];
@@ -153,7 +153,7 @@ namespace CK.Native
                     int index = ck_combat_add_buff_ex(_handle, buff.Id, buffStat, buff.Add, buff.DurationFrames, 0);
                     if (index != i)
                     {
-                        error = $"native add_buff '{buff.Id}' failed (expected {i}, got {index}): {GetLastError()}";
+                        error = $"原生 Buff '{buff.Id}' 添加失败（期望 {i}，实际 {index}）：{GetLastError()}";
                         Dispose();
                         return false;
                     }
@@ -183,7 +183,7 @@ namespace CK.Native
                         ability.Phases.Count);
                     if (index != i)
                     {
-                        error = $"native add_ability '{ability.Id}' failed (expected {i}, got {index}): {GetLastError()}";
+                        error = $"原生技能 '{ability.Id}' 添加失败（期望 {i}，实际 {index}）：{GetLastError()}";
                         Dispose();
                         return false;
                     }
@@ -197,7 +197,7 @@ namespace CK.Native
                     enemy.AttackPower, enemy.Defense, enemy.MoveSpeed);
                 if (playerIndex != 0 || enemyIndex != 1)
                 {
-                    error = $"native add_actor failed (player={playerIndex}, enemy={enemyIndex}): {GetLastError()}";
+                    error = $"原生角色添加失败（玩家={playerIndex}，敌人={enemyIndex}）：{GetLastError()}";
                     Dispose();
                     return false;
                 }
@@ -210,14 +210,14 @@ namespace CK.Native
                 int comboResult = ck_combat_set_combo(_handle, comboIndices, comboIndices.Length);
                 if (comboResult != comboIndices.Length)
                 {
-                    error = $"native set_combo failed: {GetLastError()}";
+                    error = $"原生连段设置失败：{GetLastError()}";
                     Dispose();
                     return false;
                 }
 
                 if (ck_combat_finalize(_handle) == 0)
                 {
-                    error = "native finalize rejected config: " + GetLastError();
+                    error = "原生 finalize 拒绝配置：" + GetLastError();
                     Dispose();
                     return false;
                 }
@@ -230,19 +230,19 @@ namespace CK.Native
             }
             catch (DllNotFoundException)
             {
-                error = "ck_combat.dll not found. Run Tools/build_native.ps1.";
+                error = "找不到 ck_combat.dll。请先运行 Tools/build_native.ps1。";
                 Dispose();
                 return false;
             }
             catch (EntryPointNotFoundException ex)
             {
-                error = "ck_combat.dll is stale: " + ex.Message;
+                error = "ck_combat.dll 过旧：" + ex.Message;
                 Dispose();
                 return false;
             }
             catch (BadImageFormatException ex)
             {
-                error = "ck_combat.dll architecture mismatch: " + ex.Message;
+                error = "ck_combat.dll 架构错误：" + ex.Message;
                 Dispose();
                 return false;
             }
@@ -351,7 +351,7 @@ namespace CK.Native
                 }
                 catch (Exception)
                 {
-                    // Native teardown must never mask shutdown.
+                    // 原生析构绝不能掩盖关闭流程。
                 }
                 _handle = IntPtr.Zero;
             }
@@ -403,7 +403,7 @@ namespace CK.Native
         }
 
         // ------------------------------------------------------------------
-        // Native layout mirrors. Keep in sync with Native/include/ck/ck_combat.h
+        // 原生布局镜像。必须与 Native/include/ck/ck_combat.h 保持同步
         // ------------------------------------------------------------------
 
         [StructLayout(LayoutKind.Sequential)]
